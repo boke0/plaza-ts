@@ -1,0 +1,16 @@
+name = "plaza-example-do"
+main = "src/index.tsx"
+compatibility_date = "2025-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[durable_objects.bindings]]
+name = "CHAT_ROOM"
+class_name = "ChatRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatRoom"]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"

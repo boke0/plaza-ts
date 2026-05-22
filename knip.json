@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["src/adapters/_test-worker.ts", "src/**/*.test.ts", "src/**/*.test-d.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "examples/durable-object": {
+      "project": ["src/**/*.ts"]
+    }
+  },
+  "ignoreDependencies": ["cloudflare"]
+}

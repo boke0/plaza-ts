@@ -1,0 +1,36 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts", "src/adapters/durable-object.ts"],
+  "entryPointStrategy": "expand",
+  "out": "docs",
+  "tsconfig": "tsconfig.json",
+  "readme": "none",
+  "name": "plaza-ts",
+  "plugin": ["typedoc-plugin-markdown"],
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "skipErrorChecking": false,
+  "githubPages": false,
+  "navigationLinks": {
+    "GitHub": "https://github.com/boke0/plaza"
+  },
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "highlightLanguages": [
+    "bash",
+    "console",
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "jsonc",
+    "json5",
+    "tsx",
+    "typescript",
+    "toml",
+    "yaml"
+  ]
+}

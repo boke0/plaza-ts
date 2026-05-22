@@ -1,0 +1,59 @@
+{
+  "name": "plaza-ts",
+  "version": "0.0.0",
+  "description": "Type-safe WebSocket framework primarily targeting Cloudflare Durable Objects.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./durable-object": {
+      "types": "./dist/adapters/durable-object.d.ts",
+      "default": "./dist/adapters/durable-object.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run && vitest run -c vitest.adapter.config.ts",
+    "test:core": "vitest",
+    "test:adapter": "vitest -c vitest.adapter.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint src examples && knip",
+    "fmt": "oxfmt src examples",
+    "fmt:check": "oxfmt --check src examples",
+    "docs": "typedoc",
+    "docs:watch": "typedoc --watch"
+  },
+  "peerDependencies": {
+    "@standard-schema/spec": "^1.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.10.0",
+    "@cloudflare/workers-types": "^4.20251201.0",
+    "@standard-schema/spec": "^1.0.0",
+    "knip": "^6.14.1",
+    "oxfmt": "^0.5.0",
+    "oxlint": "^1.36.0",
+    "tsdown": "^0.18.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0",
+    "zod": "^4.0.0"
+  },
+  "packageManager": "pnpm@10.20.0",
+  "pnpm": {
+    "overrides": {
+      "@vitest/runner": "3.2.4",
+      "@vitest/snapshot": "3.2.4",
+      "vitest": "3.2.4"
+    }
+  }
+}
