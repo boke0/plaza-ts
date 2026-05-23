@@ -1,8 +1,8 @@
-**plaza-ts v0.0.0**
+**plaza-ts v1.0.0**
 
 ***
 
-# plaza-ts v0.0.0
+# plaza-ts v1.0.0
 
 ## Modules
 

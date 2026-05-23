@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -8,9 +8,10 @@
 
 > **Handler**\<`State`, `Env`, `Payload`, `Events`\> = (`c`) => `unknown`
 
-Defined in: types.ts:222
+Defined in: [types.ts:292](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L292)
 
-Type of an event handler registered with [Plaza.on](../classes/Plaza.md#on).
+Type of an event handler registered with [Plaza.handle](../classes/Plaza.md#handle) (or the
+deprecated [Plaza.on](../classes/Plaza.md#on)).
 
 ## Type Parameters
 

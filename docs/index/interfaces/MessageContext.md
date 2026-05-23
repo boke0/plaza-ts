@@ -2,17 +2,20 @@
 
 ***
 
-[plaza-ts](../../README.md) / [index](../README.md) / ConnectContext
+[plaza-ts](../../README.md) / [index](../README.md) / MessageContext
 
-# Interface: ConnectContext\<State, Env, Events\>
+# Interface: MessageContext\<State, Env, Events\>
 
-Defined in: [types.ts:218](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L218)
+Defined in: [types.ts:132](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L132)
 
-Context passed to [onConnect](../classes/Plaza.md#onconnect) handlers.
+Context passed to a client-originated message handler or middleware running
+for a message.
 
-## Extends
+## Extended by
 
-- [`MessageContext`](MessageContext.md)\<`State`, `Env`, `Events`\>
+- [`EventContext`](EventContext.md)
+- [`ConnectContext`](ConnectContext.md)
+- [`CloseContext`](CloseContext.md)
 
 ## Type Parameters
 
@@ -20,13 +23,19 @@ Context passed to [onConnect](../classes/Plaza.md#onconnect) handlers.
 
 `State`
 
+Per-connection state type
+
 ### Env
 
 `Env`
 
+Environment bindings (`Env` of the Durable Object on Cloudflare)
+
 ### Events
 
 `Events` *extends* [`EventMap`](../type-aliases/EventMap.md)
+
+The map of registered events
 
 ## Properties
 
@@ -38,10 +47,6 @@ Defined in: [types.ts:134](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8d
 
 Always `"message"` — discriminator with [TaskContext](TaskContext.md).
 
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`kind`](MessageContext.md#kind)
-
 ***
 
 ### connection
@@ -51,10 +56,6 @@ Always `"message"` — discriminator with [TaskContext](TaskContext.md).
 Defined in: [types.ts:136](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L136)
 
 The connection that produced the current event.
-
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`connection`](MessageContext.md#connection)
 
 ***
 
@@ -67,10 +68,6 @@ Defined in: [types.ts:141](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8d
 Event name being dispatched. For lifecycle hooks this is one of
 `"connect"`, `"close"`, `"error"`, etc.
 
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`event`](MessageContext.md#event)
-
 ***
 
 ### env
@@ -81,10 +78,6 @@ Defined in: [types.ts:143](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8d
 
 Environment bindings (`Env` of the Durable Object on Cloudflare).
 
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`env`](MessageContext.md#env-1)
-
 ***
 
 ### executionCtx
@@ -94,10 +87,6 @@ Environment bindings (`Env` of the Durable Object on Cloudflare).
 Defined in: [types.ts:145](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L145)
 
 Execution context (`DurableObjectState` on Cloudflare).
-
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`executionCtx`](MessageContext.md#executionctx)
 
 ## Methods
 
@@ -127,10 +116,6 @@ Arbitrary payload
 
 `void`
 
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`emit`](MessageContext.md#emit)
-
 ***
 
 ### to()
@@ -153,10 +138,6 @@ Narrowing criterion ([Selector](../type-aliases/Selector.md))
 
 [`Targets`](../classes/Targets.md)\<`State`, `Env`, `Events`\>
 
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`to`](MessageContext.md#to)
-
 ***
 
 ### except()
@@ -178,10 +159,6 @@ Connections to exclude
 #### Returns
 
 [`Targets`](../classes/Targets.md)\<`State`, `Env`, `Events`\>
-
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`except`](MessageContext.md#except)
 
 ***
 
@@ -210,7 +187,3 @@ completes.
 #### Returns
 
 `Promise`\<`void`\>
-
-#### Inherited from
-
-[`MessageContext`](MessageContext.md).[`runTask`](MessageContext.md#runtask)

@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -8,7 +8,7 @@
 
 > **ConnectHandler**\<`State`, `Env`, `Events`\> = (`c`) => `unknown`
 
-Defined in: types.ts:244
+Defined in: [types.ts:323](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L323)
 
 Type of a handler registered with [Plaza.onConnect](../classes/Plaza.md#onconnect).
 

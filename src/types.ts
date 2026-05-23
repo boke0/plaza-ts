@@ -120,10 +120,8 @@ export type DeserializeFn = (data: string | ArrayBuffer) => {
 };
 
 /**
- * Base context passed to every handler and middleware.
- *
- * Carries the active connection, the current event name, the runtime bindings,
- * and the send-side API.
+ * Context passed to a client-originated message handler or middleware running
+ * for a message.
  *
  * @typeParam State - Per-connection state type
  * @typeParam Env - Environment bindings (`Env` of the Durable Object on Cloudflare)
@@ -131,7 +129,9 @@ export type DeserializeFn = (data: string | ArrayBuffer) => {
  *
  * @public
  */
-export interface Context<State, Env, Events extends EventMap> {
+export interface MessageContext<State, Env, Events extends EventMap> {
+  /** Always `"message"` — discriminator with {@link TaskContext}. */
+  readonly kind: "message";
   /** The connection that produced the current event. */
   readonly connection: Connection<State>;
   /**
@@ -165,7 +165,28 @@ export interface Context<State, Env, Events extends EventMap> {
    * @param conns - Connections to exclude
    */
   except(...conns: Connection<State>[]): Targets<State, Env, Events>;
+
+  /**
+   * Invoke a server-side task registered via {@link Plaza.task}.
+   *
+   * Equivalent to {@link Plaza.runTask} but reuses the current `env` and
+   * `executionCtx`. Returns a promise that resolves after the task handler
+   * completes.
+   */
+  runTask(name: string, payload: unknown): Promise<void>;
 }
+
+/**
+ * Union of contexts that a middleware can receive: either a client-originated
+ * {@link MessageContext} or a server-originated {@link TaskContext}.
+ *
+ * Discriminate on `c.kind` to access `c.connection` safely.
+ *
+ * @public
+ */
+export type Context<State, Env, Events extends EventMap> =
+  | MessageContext<State, Env, Events>
+  | TaskContext<State, Env, Events>;
 
 /**
  * Context passed to event handlers.
@@ -180,7 +201,7 @@ export interface Context<State, Env, Events extends EventMap> {
  * @public
  */
 export interface EventContext<State, Env, Payload, Events extends EventMap>
-  extends Context<State, Env, Events> {
+  extends MessageContext<State, Env, Events> {
   /**
    * Retrieve the validated payload.
    *
@@ -195,7 +216,7 @@ export interface EventContext<State, Env, Payload, Events extends EventMap>
  * @public
  */
 export interface ConnectContext<State, Env, Events extends EventMap>
-  extends Context<State, Env, Events> {}
+  extends MessageContext<State, Env, Events> {}
 
 /**
  * Context passed to {@link Plaza.onClose | onClose} handlers.
@@ -205,7 +226,7 @@ export interface ConnectContext<State, Env, Events extends EventMap>
  * @public
  */
 export interface CloseContext<State, Env, Events extends EventMap>
-  extends Context<State, Env, Events> {
+  extends MessageContext<State, Env, Events> {
   /** WebSocket close code. */
   readonly code: number;
   /** WebSocket close reason string. */
@@ -215,12 +236,70 @@ export interface CloseContext<State, Env, Events extends EventMap>
 }
 
 /**
- * Type of an event handler registered with {@link Plaza.on}.
+ * Context passed to a server-side {@link Plaza.task | task} handler.
+ *
+ * Tasks are dispatched via {@link Plaza.runTask} from server code (Durable
+ * Object alarms, RPC methods, other handlers, ...). They have no originating
+ * client `connection`, so `connection` is `null`. The remaining surface
+ * (`emit`, `to`, `except`, `env`, `executionCtx`) is identical to the message
+ * context.
+ *
+ * @public
+ */
+export interface TaskContext<State, Env, Events extends EventMap> {
+  /** Always `"task"` — discriminator with {@link Context}. */
+  readonly kind: "task";
+  /** Tasks are not tied to a specific connection. */
+  readonly connection: null;
+  /** Name passed to {@link Plaza.runTask}. */
+  readonly event: string;
+  /** Environment bindings (`Env` of the Durable Object on Cloudflare). */
+  readonly env: Env;
+  /** Execution context (`DurableObjectState` on Cloudflare). */
+  readonly executionCtx: DurableObjectState;
+
+  /** Broadcast an event to every connected client. */
+  emit(event: string, payload: unknown): void;
+  /** Build a {@link Targets} narrowed by the given selector. */
+  to(sel: Selector<State>): Targets<State, Env, Events>;
+  /** Build a {@link Targets} that excludes the given connections. */
+  except(...conns: Connection<State>[]): Targets<State, Env, Events>;
+
+  /**
+   * Invoke another server-side task. Same semantics as {@link Plaza.runTask}
+   * but reuses the current `env` and `executionCtx`.
+   */
+  runTask(name: string, payload: unknown): Promise<void>;
+}
+
+/**
+ * Context passed to a {@link Plaza.task | task} handler with a validated
+ * payload accessor.
+ *
+ * @public
+ */
+export interface TaskEventContext<State, Env, Payload, Events extends EventMap>
+  extends TaskContext<State, Env, Events> {
+  valid(target: "json"): Payload;
+}
+
+/**
+ * Type of an event handler registered with {@link Plaza.handle} (or the
+ * deprecated {@link Plaza.on}).
  *
  * @public
  */
 export type Handler<State, Env, Payload, Events extends EventMap> = (
   c: EventContext<State, Env, Payload, Events>,
+) => unknown;
+
+/**
+ * Type of a task handler registered with {@link Plaza.task}.
+ *
+ * @public
+ */
+export type TaskHandler<State, Env, Payload, Events extends EventMap> = (
+  c: TaskEventContext<State, Env, Payload, Events>,
 ) => unknown;
 
 /**
@@ -294,3 +373,25 @@ export type InferEvents<P> = P extends { __events: infer E }
  * @public
  */
 export type InferState<P> = P extends { __state: infer S } ? S : never;
+
+/**
+ * Extract the registered task map from a `Plaza` instance type.
+ *
+ * Useful on the server side to recover the full task type information from
+ * `typeof app`.
+ *
+ * @typeParam P - The {@link Plaza} instance type
+ *
+ * @example
+ * ```ts
+ * export type AppType = typeof app;
+ * type Tasks = InferTasks<AppType>;
+ * ```
+ *
+ * @public
+ */
+export type InferTasks<P> = P extends { __tasks: infer T }
+  ? T extends EventMap
+    ? T
+    : never
+  : never;

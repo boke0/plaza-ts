@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -8,7 +8,7 @@
 
 > **SerializeFn** = (`event`, `payload`) => `string` \| `ArrayBuffer`
 
-Defined in: types.ts:104
+Defined in: [types.ts:104](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L104)
 
 Function that encodes an event name and payload into a wire frame on send.
 

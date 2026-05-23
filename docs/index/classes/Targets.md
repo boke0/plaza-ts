@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Class: Targets\<State, Env, Events\>
 
-Defined in: targets.ts:35
+Defined in: [targets.ts:35](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/targets.ts#L35)
 
 Immutable description of a set of send targets.
 
@@ -52,7 +52,7 @@ Registered event map
 
 > **to**(`sel`): `Targets`\<`State`, `Env`, `Events`\>
 
-Defined in: targets.ts:55
+Defined in: [targets.ts:55](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/targets.ts#L55)
 
 Return a new Targets with an additional narrowing step appended.
 
@@ -82,7 +82,7 @@ c.to({ channel: "lobby" }).to({ tag: "admin" }).emit("ping", {});
 
 > **except**(...`conns`): `Targets`\<`State`, `Env`, `Events`\>
 
-Defined in: targets.ts:83
+Defined in: [targets.ts:83](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/targets.ts#L83)
 
 Return a new Targets that excludes the given connections.
 
@@ -110,7 +110,7 @@ c.to({ channel: "lobby" }).except(c.connection).emit("notice", {});
 
 > **emit**(`event`, `payload`): `void`
 
-Defined in: targets.ts:101
+Defined in: [targets.ts:101](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/targets.ts#L101)
 
 Resolve the plan and dispatch an event to every matching connection.
 
@@ -142,7 +142,7 @@ Arbitrary payload
 
 > **\[iterator\]**(): `IterableIterator`\<[`Connection`](Connection.md)\<`State`\>\>
 
-Defined in: targets.ts:120
+Defined in: [targets.ts:120](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/targets.ts#L120)
 
 Iterate over the connections that match the current plan.
 

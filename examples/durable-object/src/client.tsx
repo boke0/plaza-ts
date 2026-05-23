@@ -71,9 +71,7 @@ function App() {
   return (
     <main class="mx-auto max-w-3xl px-4 py-8">
       <header class="mb-6 flex items-baseline justify-between">
-        <h1 class="text-xl font-semibold">
-          Plaza — Durable Object chat room
-        </h1>
+        <h1 class="text-xl font-semibold">Plaza — Durable Object chat room</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400">{status}</p>
       </header>
 
@@ -87,7 +85,9 @@ function App() {
             id="room"
             type="text"
             value={room}
-            onInput={(e) => setRoom((e.currentTarget as HTMLInputElement).value)}
+            onInput={(e) =>
+              setRoom((e.currentTarget as HTMLInputElement).value)
+            }
             class={fieldClass}
           />
         </div>
@@ -136,11 +136,7 @@ function App() {
           >
             authenticate
           </button>
-          <button
-            type="button"
-            class={subtleButtonClass}
-            onClick={disconnect}
-          >
+          <button type="button" class={subtleButtonClass} onClick={disconnect}>
             disconnect
           </button>
         </div>

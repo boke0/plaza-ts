@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Class: PlazaAttachmentTooLargeError
 
-Defined in: connection.ts:33
+Defined in: [connection.ts:33](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L33)
 
 Thrown when a connection's serialized attachment exceeds the configured limit.
 
@@ -23,7 +23,7 @@ so Plaza guards against it using [PlazaOptions.maxAttachmentBytes](../interfaces
 
 > **new PlazaAttachmentTooLargeError**(`connectionId`, `bytes`, `limit`): `PlazaAttachmentTooLargeError`
 
-Defined in: connection.ts:39
+Defined in: [connection.ts:39](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L39)
 
 #### Parameters
 
@@ -59,7 +59,7 @@ Configured size limit in bytes
 
 > `readonly` **connectionId**: `string`
 
-Defined in: connection.ts:40
+Defined in: [connection.ts:40](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L40)
 
 Id of the connection whose attachment overflowed
 
@@ -69,7 +69,7 @@ Id of the connection whose attachment overflowed
 
 > `readonly` **bytes**: `number`
 
-Defined in: connection.ts:41
+Defined in: [connection.ts:41](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L41)
 
 Actual serialized size in bytes
 
@@ -79,6 +79,6 @@ Actual serialized size in bytes
 
 > `readonly` **limit**: `number`
 
-Defined in: connection.ts:42
+Defined in: [connection.ts:42](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L42)
 
 Configured size limit in bytes

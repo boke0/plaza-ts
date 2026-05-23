@@ -13,6 +13,7 @@ import type {
   Middleware,
   Prefix,
   SerializeFn,
+  TaskHandler,
   ValidatorsOutput,
 } from "./types.ts";
 import type { Validator } from "./validator.ts";
@@ -20,7 +21,55 @@ import type { Validator } from "./validator.ts";
 interface RouteEntry<State, Env, Events extends EventMap> {
   middlewares: Middleware<State, Env, Events>[];
   validators: Validator<unknown>[];
-  handler: Handler<State, Env, unknown, Events>;
+  handler:
+    | Handler<State, Env, unknown, Events>
+    | TaskHandler<State, Env, unknown, Events>;
+}
+
+/**
+ * Thrown / dispatched when a route is invoked through the wrong kind of entry
+ * point: e.g. a client sends a name registered as a {@link Plaza.task | task},
+ * or {@link Plaza.runTask} is called with a name registered as a
+ * {@link Plaza.handle | handle}.
+ *
+ * @public
+ */
+export class PlazaKindMismatchError extends Error {
+  /** Kind expected by the caller (e.g. `"message"` for incoming WS frames). */
+  readonly expected: "message" | "task";
+  /** Kind actually registered for `routeName`. */
+  readonly actual: "message" | "task";
+  /** Name of the route that was looked up. */
+  readonly routeName: string;
+
+  constructor(
+    routeName: string,
+    expected: "message" | "task",
+    actual: "message" | "task",
+  ) {
+    super(
+      `Plaza route "${routeName}" is registered as a ${actual}; expected a ${expected}.`,
+    );
+    this.name = "PlazaKindMismatchError";
+    this.routeName = routeName;
+    this.expected = expected;
+    this.actual = actual;
+  }
+}
+
+/**
+ * Thrown when an event name has no registered route. Surfaces through
+ * {@link Plaza.onError} on both the {@link Plaza.dispatch | client-message}
+ * and {@link Plaza.runTask | server-task} paths; on the task path the
+ * promise also rejects so callers can react.
+ *
+ * @public
+ */
+export class PlazaUnknownEventError extends Error {
+  constructor(readonly eventName: string) {
+    super(`Plaza event "${eventName}" is not registered.`);
+    this.name = "PlazaUnknownEventError";
+  }
 }
 
 /**
@@ -102,11 +151,14 @@ export class Plaza<
   State extends Record<string, unknown> = {},
   Env = unknown,
   Events extends EventMap = {},
+  Tasks extends EventMap = {},
 > {
   /** @internal phantom for InferEvents */
   declare readonly __events: Events;
   /** @internal phantom for InferState */
   declare readonly __state: State;
+  /** @internal phantom for InferTasks */
+  declare readonly __tasks: Tasks;
 
   /** @internal */
   readonly _routes = new Map<string, RouteEntry<State, Env, Events>>();
@@ -214,9 +266,14 @@ export class Plaza<
   }
 
   /**
-   * Register a handler that captures exceptions thrown from handlers or middleware.
+   * Register a handler that captures exceptions thrown from handlers or
+   * middleware.
    *
-   * When no handler is registered, the exception is logged via `console.error`.
+   * Whether to propagate the error back to the caller (e.g. let
+   * {@link Plaza.runTask} reject so a Durable Object alarm retries) is up to
+   * the registered handler — if it returns normally the error is considered
+   * handled and swallowed; if it `throw`s, the throw propagates. When no
+   * handler is registered the error propagates as-is.
    *
    * @param handler - {@link ErrorHandler}
    * @returns This instance (for chaining)
@@ -227,7 +284,7 @@ export class Plaza<
   }
 
   /**
-   * Register a handler for a specific event name.
+   * Register a handler for a client-originated WebSocket message.
    *
    * Validators are optional and may be passed in any number. When multiple
    * validators are provided their outputs are merged and surfaced through
@@ -242,7 +299,7 @@ export class Plaza<
    *
    * @example
    * ```ts
-   * plaza.on(
+   * plaza.handle(
    *   "join",
    *   validator(z.object({ channel: z.string() })),
    *   (c) => {
@@ -252,6 +309,99 @@ export class Plaza<
    * );
    * ```
    */
+  handle<
+    K extends string,
+    const V extends readonly Validator<any>[],
+    P = ValidatorsOutput<V>,
+  >(
+    event: K,
+    ...args: [...V, Handler<State, Env, P, Events & Record<K, P>>]
+  ): Plaza<State, Env, Events & Record<K, P>, Tasks>;
+  handle<K extends string>(
+    event: K,
+    handler: Handler<State, Env, unknown, Events & Record<K, unknown>>,
+  ): Plaza<State, Env, Events & Record<K, unknown>, Tasks>;
+  handle(event: string, ...args: unknown[]): unknown {
+    const userHandler = args.pop() as Handler<State, Env, unknown, Events>;
+    const validators = args as Validator<unknown>[];
+    const guarded: Handler<State, Env, unknown, Events> = (c) => {
+      if (c.kind !== "message") {
+        throw new PlazaKindMismatchError(event, c.kind, "message");
+      }
+      return userHandler(c);
+    };
+    this._routes.set(event, {
+      middlewares: [],
+      validators,
+      handler: guarded,
+    });
+    return this as unknown;
+  }
+
+  /**
+   * Register a handler for a server-side task.
+   *
+   * Tasks are dispatched via {@link Plaza.runTask} (or {@link MessageContext.runTask}
+   * inside a handler). Unlike {@link Plaza.handle}, tasks cannot be triggered
+   * by clients — the route map records the kind and rejects cross-kind
+   * dispatch.
+   *
+   * Validators behave identically to {@link Plaza.handle}.
+   *
+   * @typeParam K - Task name (inferred as a string literal)
+   * @typeParam V - Tuple of {@link Validator}s
+   * @typeParam P - Intersection of validator outputs (the payload type)
+   * @param event - Task name to handle
+   * @param args - Zero or more validators followed by a final
+   * {@link TaskHandler}
+   * @returns A new Plaza type with the task added (for chaining)
+   *
+   * @example
+   * ```ts
+   * plaza.task(
+   *   "cleanup",
+   *   validator(z.object({ olderThan: z.number() })),
+   *   (c) => {
+   *     c.to({ channel: "all" }).emit("system", { kind: "cleanup" });
+   *   },
+   * );
+   * ```
+   */
+  task<
+    K extends string,
+    const V extends readonly Validator<any>[],
+    P = ValidatorsOutput<V>,
+  >(
+    event: K,
+    ...args: [...V, TaskHandler<State, Env, P, Events>]
+  ): Plaza<State, Env, Events, Tasks & Record<K, P>>;
+  task<K extends string>(
+    event: K,
+    handler: TaskHandler<State, Env, unknown, Events>,
+  ): Plaza<State, Env, Events, Tasks & Record<K, unknown>>;
+  task(event: string, ...args: unknown[]): unknown {
+    const userHandler = args.pop() as TaskHandler<State, Env, unknown, Events>;
+    const validators = args as Validator<unknown>[];
+    const guarded: TaskHandler<State, Env, unknown, Events> = (c) => {
+      if (c.kind !== "task") {
+        throw new PlazaKindMismatchError(event, c.kind, "task");
+      }
+      return userHandler(c);
+    };
+    this._routes.set(event, {
+      middlewares: [],
+      validators,
+      handler: guarded,
+    });
+    return this as unknown;
+  }
+
+  /**
+   * Deprecated alias for {@link Plaza.handle}.
+   *
+   * @deprecated Use {@link Plaza.handle} instead. `.on()` will be removed in a
+   * future release.
+   */
   on<
     K extends string,
     const V extends readonly Validator<any>[],
@@ -259,20 +409,16 @@ export class Plaza<
   >(
     event: K,
     ...args: [...V, Handler<State, Env, P, Events & Record<K, P>>]
-  ): Plaza<State, Env, Events & Record<K, P>>;
+  ): Plaza<State, Env, Events & Record<K, P>, Tasks>;
   on<K extends string>(
     event: K,
     handler: Handler<State, Env, unknown, Events & Record<K, unknown>>,
-  ): Plaza<State, Env, Events & Record<K, unknown>>;
+  ): Plaza<State, Env, Events & Record<K, unknown>, Tasks>;
   on(event: string, ...args: unknown[]): unknown {
-    const handler = args.pop() as Handler<State, Env, unknown, Events>;
-    const validators = args as Validator<unknown>[];
-    this._routes.set(event, {
-      middlewares: [],
-      validators,
-      handler,
-    });
-    return this as unknown;
+    return (this.handle as (e: string, ...a: unknown[]) => unknown)(
+      event,
+      ...args,
+    );
   }
 
   /**
@@ -302,24 +448,28 @@ export class Plaza<
    *   .route("chat.", chat);
    * ```
    */
-  route<S2 extends State, En2 extends Env, E2 extends EventMap>(
-    sub: Plaza<S2, En2, E2>,
-  ): Plaza<State, Env, Events & E2>;
+  route<
+    S2 extends State,
+    En2 extends Env,
+    E2 extends EventMap,
+    T2 extends EventMap,
+  >(sub: Plaza<S2, En2, E2, T2>): Plaza<State, Env, Events & E2, Tasks & T2>;
   route<
     P extends string,
     S2 extends State,
     En2 extends Env,
     E2 extends EventMap,
+    T2 extends EventMap,
   >(
     prefix: P,
-    sub: Plaza<S2, En2, E2>,
-  ): Plaza<State, Env, Events & Prefix<P, E2>>;
+    sub: Plaza<S2, En2, E2, T2>,
+  ): Plaza<State, Env, Events & Prefix<P, E2>, Tasks & Prefix<P, T2>>;
   route(
-    prefixOrSub: string | Plaza<any, any, any>,
-    maybeSub?: Plaza<any, any, any>,
+    prefixOrSub: string | Plaza<any, any, any, any>,
+    maybeSub?: Plaza<any, any, any, any>,
   ): unknown {
     const prefix = typeof prefixOrSub === "string" ? prefixOrSub : "";
-    const sub = (maybeSub ?? prefixOrSub) as Plaza<any, any, any>;
+    const sub = (maybeSub ?? prefixOrSub) as Plaza<any, any, any, any>;
     const subScopedMws = [...sub._pendingMiddlewares] as Middleware<
       State,
       Env,
@@ -413,6 +563,10 @@ export class Plaza<
   /**
    * Deserialize an incoming message and dispatch it to the matching handler.
    *
+   * Best-effort: any error (decode failure, unknown event, kind mismatch,
+   * handler throw) is forwarded to {@link Plaza.onError} but never propagates
+   * out of `dispatch` itself — the WebSocket message loop keeps running.
+   *
    * Designed to be called from a Durable Object's `webSocketMessage`. The
    * Durable Object adapter (`durableObject(plaza)`) wires this automatically, so direct use is
    * only necessary for custom routing.
@@ -430,23 +584,91 @@ export class Plaza<
   ): Promise<void> {
     const conn = this._registry.findByWebSocket(ws);
     if (!conn) return;
-
-    let event: string;
-    let payload: unknown;
+    // dispatch is best-effort: errors flow through onError but never propagate
+    // to the WebSocket message loop (which would crash on every bad client).
     try {
-      const decoded = this._deserialize(message);
-      event = decoded.event;
-      payload = decoded.payload;
+      let event: string;
+      let payload: unknown;
+      try {
+        const decoded = this._deserialize(message);
+        event = decoded.event;
+        payload = decoded.payload;
+      } catch (err) {
+        const context = this._makeContext(conn, "<deserialize>", ctx, env);
+        await this._runErrorHandlers(err, context);
+        return;
+      }
+      await this._runRoute(conn, event, payload, ctx, env, "message");
+    } catch {}
+  }
+
+  /**
+   * Invoke a server-side task by name.
+   *
+   * Looks up the route registered via {@link Plaza.task}, builds a
+   * {@link TaskContext} (with `connection === null`), and runs the registered
+   * middleware chain, validators, and handler. The returned promise resolves
+   * once the handler completes, so callers may `await` it from a Durable
+   * Object alarm or RPC method.
+   *
+   * Errors thrown inside the chain are forwarded to {@link Plaza.onError}
+   * handlers. The promise rejects when no error handler is registered, or
+   * when a registered handler rethrows — letting the caller (e.g. a Durable
+   * Object alarm) react. A handler that returns normally swallows the error.
+   *
+   * @typeParam K - Task name (must be a key of `Tasks`)
+   * @param ctx - Execution context (e.g. Durable Object `state`)
+   * @param env - Environment bindings
+   * @param name - Registered task name
+   * @param payload - Payload matching the task's validator output
+   */
+  async runTask<K extends keyof Tasks & string>(
+    ctx: DurableObjectState,
+    env: Env,
+    name: K,
+    payload: Tasks[K],
+  ): Promise<void> {
+    await this._runRoute(null, name, payload, ctx, env, "task");
+  }
+
+  /**
+   * Look up a route by name and run it.
+   *
+   * Shared backbone of {@link Plaza.dispatch} (client message) and
+   * {@link Plaza.runTask} (server task). The route table is kind-agnostic; the
+   * kind gate lives inside the handlers registered by {@link Plaza.handle} /
+   * {@link Plaza.task}. Errors surface through {@link Plaza.onError} and
+   * propagate when no handler is registered or a handler rethrows — callers
+   * decide whether to swallow.
+   *
+   * @internal
+   */
+  private async _runRoute(
+    conn: Connection<State> | null,
+    name: string,
+    payload: unknown,
+    ctx: DurableObjectState,
+    env: Env,
+    kind: "message" | "task",
+  ): Promise<void> {
+    const context = this._makeContext(conn, name, ctx, env, undefined, kind);
+    try {
+      const entry = this._routes.get(name);
+      if (!entry) throw new PlazaUnknownEventError(name);
+      await this._runEntry(entry, context, payload);
     } catch (err) {
-      const context = this._makeContext(conn, "<deserialize>", ctx, env);
       await this._runErrorHandlers(err, context);
-      return;
+    } finally {
+      if (conn) conn._flushAttachment(this._options.maxAttachmentBytes);
     }
+  }
 
-    const entry = this._routes.get(event);
-    if (!entry) return;
-
-    const context = this._makeContext(conn, event, ctx, env);
+  /** @internal */
+  private async _runEntry(
+    entry: RouteEntry<State, Env, Events>,
+    context: PlazaContext<State, Env, Events>,
+    payload: unknown,
+  ): Promise<void> {
     const chain = [
       ...this._pendingMiddlewares,
       ...entry.middlewares,
@@ -473,19 +695,13 @@ export class Plaza<
         }
       }
       c._valid.json = valid;
-      await entry.handler(c as never);
+      await (entry.handler as (c: unknown) => unknown)(c);
     };
 
-    try {
-      await compose<PlazaContext<State, Env, Events>>(
-        chain as never,
-        final,
-      )(context);
-    } catch (err) {
-      await this._runErrorHandlers(err, context);
-    } finally {
-      conn._flushAttachment(this._options.maxAttachmentBytes);
-    }
+    await compose<PlazaContext<State, Env, Events>>(
+      chain as never,
+      final,
+    )(context);
   }
 
   /**
@@ -578,11 +794,12 @@ export class Plaza<
   }
 
   private _makeContext(
-    conn: Connection<State>,
+    conn: Connection<State> | null,
     event: string,
     ctx: DurableObjectState,
     env: Env,
     closeInfo?: { code: number; reason: string; wasClean: boolean },
+    kind: "message" | "task" = "message",
   ): PlazaContext<State, Env, Events> {
     return new PlazaContext<State, Env, Events>({
       registry: this._registry,
@@ -591,7 +808,10 @@ export class Plaza<
       event,
       env,
       executionCtx: ctx,
+      runTask: (name, payload) =>
+        this.runTask(ctx, env, name as never, payload as never),
       closeInfo,
+      kind,
     });
   }
 
@@ -599,17 +819,9 @@ export class Plaza<
     err: unknown,
     context: PlazaContext<State, Env, Events>,
   ): Promise<void> {
-    if (this._errorHandlers.length === 0) {
-      // No registered handler — surface to platform via console
-      console.error("Plaza unhandled error:", err);
-      return;
-    }
+    if (this._errorHandlers.length === 0) throw err;
     for (const h of this._errorHandlers) {
-      try {
-        await h(err, context as never);
-      } catch (innerErr) {
-        console.error("Plaza error handler threw:", innerErr);
-      }
+      await h(err, context as never);
     }
   }
 }

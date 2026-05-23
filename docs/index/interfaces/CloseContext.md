@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Interface: CloseContext\<State, Env, Events\>
 
-Defined in: types.ts:207
+Defined in: [types.ts:228](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L228)
 
 Context passed to [onClose](../classes/Plaza.md#onclose) handlers.
 
@@ -14,7 +14,7 @@ Exposes the close reason via `code` / `reason` / `wasClean`.
 
 ## Extends
 
-- [`Context`](Context.md)\<`State`, `Env`, `Events`\>
+- [`MessageContext`](MessageContext.md)\<`State`, `Env`, `Events`\>
 
 ## Type Parameters
 
@@ -32,17 +32,31 @@ Exposes the close reason via `code` / `reason` / `wasClean`.
 
 ## Properties
 
+### kind
+
+> `readonly` **kind**: `"message"`
+
+Defined in: [types.ts:134](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L134)
+
+Always `"message"` — discriminator with [TaskContext](TaskContext.md).
+
+#### Inherited from
+
+[`MessageContext`](MessageContext.md).[`kind`](MessageContext.md#kind)
+
+***
+
 ### connection
 
 > `readonly` **connection**: [`Connection`](../classes/Connection.md)\<`State`\>
 
-Defined in: types.ts:136
+Defined in: [types.ts:136](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L136)
 
 The connection that produced the current event.
 
 #### Inherited from
 
-[`Context`](Context.md).[`connection`](Context.md#connection)
+[`MessageContext`](MessageContext.md).[`connection`](MessageContext.md#connection)
 
 ***
 
@@ -50,14 +64,14 @@ The connection that produced the current event.
 
 > `readonly` **event**: `string`
 
-Defined in: types.ts:141
+Defined in: [types.ts:141](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L141)
 
 Event name being dispatched. For lifecycle hooks this is one of
 `"connect"`, `"close"`, `"error"`, etc.
 
 #### Inherited from
 
-[`Context`](Context.md).[`event`](Context.md#event)
+[`MessageContext`](MessageContext.md).[`event`](MessageContext.md#event)
 
 ***
 
@@ -65,13 +79,13 @@ Event name being dispatched. For lifecycle hooks this is one of
 
 > `readonly` **env**: `Env`
 
-Defined in: types.ts:143
+Defined in: [types.ts:143](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L143)
 
 Environment bindings (`Env` of the Durable Object on Cloudflare).
 
 #### Inherited from
 
-[`Context`](Context.md).[`env`](Context.md#env-1)
+[`MessageContext`](MessageContext.md).[`env`](MessageContext.md#env-1)
 
 ***
 
@@ -79,13 +93,13 @@ Environment bindings (`Env` of the Durable Object on Cloudflare).
 
 > `readonly` **executionCtx**: `DurableObjectState`
 
-Defined in: types.ts:145
+Defined in: [types.ts:145](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L145)
 
 Execution context (`DurableObjectState` on Cloudflare).
 
 #### Inherited from
 
-[`Context`](Context.md).[`executionCtx`](Context.md#executionctx)
+[`MessageContext`](MessageContext.md).[`executionCtx`](MessageContext.md#executionctx)
 
 ***
 
@@ -93,7 +107,7 @@ Execution context (`DurableObjectState` on Cloudflare).
 
 > `readonly` **code**: `number`
 
-Defined in: types.ts:210
+Defined in: [types.ts:231](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L231)
 
 WebSocket close code.
 
@@ -103,7 +117,7 @@ WebSocket close code.
 
 > `readonly` **reason**: `string`
 
-Defined in: types.ts:212
+Defined in: [types.ts:233](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L233)
 
 WebSocket close reason string.
 
@@ -113,7 +127,7 @@ WebSocket close reason string.
 
 > `readonly` **wasClean**: `boolean`
 
-Defined in: types.ts:214
+Defined in: [types.ts:235](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L235)
 
 Whether the close handshake completed cleanly.
 
@@ -123,7 +137,7 @@ Whether the close handshake completed cleanly.
 
 > **emit**(`event`, `payload`): `void`
 
-Defined in: types.ts:153
+Defined in: [types.ts:153](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L153)
 
 Send an event to every connected client.
 
@@ -147,7 +161,7 @@ Arbitrary payload
 
 #### Inherited from
 
-[`Context`](Context.md).[`emit`](Context.md#emit)
+[`MessageContext`](MessageContext.md).[`emit`](MessageContext.md#emit)
 
 ***
 
@@ -155,7 +169,7 @@ Arbitrary payload
 
 > **to**(`sel`): [`Targets`](../classes/Targets.md)\<`State`, `Env`, `Events`\>
 
-Defined in: types.ts:160
+Defined in: [types.ts:160](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L160)
 
 Build a [Targets](../classes/Targets.md) narrowed by the given selector.
 
@@ -173,7 +187,7 @@ Narrowing criterion ([Selector](../type-aliases/Selector.md))
 
 #### Inherited from
 
-[`Context`](Context.md).[`to`](Context.md#to)
+[`MessageContext`](MessageContext.md).[`to`](MessageContext.md#to)
 
 ***
 
@@ -181,7 +195,7 @@ Narrowing criterion ([Selector](../type-aliases/Selector.md))
 
 > **except**(...`conns`): [`Targets`](../classes/Targets.md)\<`State`, `Env`, `Events`\>
 
-Defined in: types.ts:167
+Defined in: [types.ts:167](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L167)
 
 Build a [Targets](../classes/Targets.md) that excludes the given connections.
 
@@ -199,4 +213,36 @@ Connections to exclude
 
 #### Inherited from
 
-[`Context`](Context.md).[`except`](Context.md#except)
+[`MessageContext`](MessageContext.md).[`except`](MessageContext.md#except)
+
+***
+
+### runTask()
+
+> **runTask**(`name`, `payload`): `Promise`\<`void`\>
+
+Defined in: [types.ts:176](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L176)
+
+Invoke a server-side task registered via [Plaza.task](../classes/Plaza.md#task).
+
+Equivalent to [Plaza.runTask](../classes/Plaza.md#runtask) but reuses the current `env` and
+`executionCtx`. Returns a promise that resolves after the task handler
+completes.
+
+#### Parameters
+
+##### name
+
+`string`
+
+##### payload
+
+`unknown`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Inherited from
+
+[`MessageContext`](MessageContext.md).[`runTask`](MessageContext.md#runtask)

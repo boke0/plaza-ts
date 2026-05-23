@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Class: ValidationError
 
-Defined in: validator.ts:45
+Defined in: [validator.ts:45](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/validator.ts#L45)
 
 Error thrown when payload validation fails.
 
@@ -23,7 +23,7 @@ by the underlying schema library.
 
 > **new ValidationError**(`issues`): `ValidationError`
 
-Defined in: validator.ts:52
+Defined in: [validator.ts:52](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/validator.ts#L52)
 
 #### Parameters
 
@@ -47,6 +47,6 @@ Issues returned by the StandardSchema validator
 
 > `readonly` **issues**: readonly `Issue`[]
 
-Defined in: validator.ts:47
+Defined in: [validator.ts:47](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/validator.ts#L47)
 
 StandardSchema issues produced by the failing schema.

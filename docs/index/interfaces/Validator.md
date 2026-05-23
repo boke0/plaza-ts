@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Interface: Validator\<Out\>
 
-Defined in: validator.ts:13
+Defined in: [validator.ts:13](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/validator.ts#L13)
 
 Single payload-validation strategy.
 
@@ -27,7 +27,7 @@ Output type after validation
 
 > `readonly` **target**: `"json"`
 
-Defined in: validator.ts:24
+Defined in: [validator.ts:24](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/validator.ts#L24)
 
 Validation target. Only `"json"` is supported today.
 
@@ -37,7 +37,7 @@ Validation target. Only `"json"` is supported today.
 
 > **validate**(`input`): `Promise`\<`Out`\>
 
-Defined in: validator.ts:34
+Defined in: [validator.ts:34](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/validator.ts#L34)
 
 Validate the incoming payload and return the validated value.
 
