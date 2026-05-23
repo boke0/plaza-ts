@@ -8,7 +8,7 @@
 
 > **ErrorHandler**\<`State`, `Env`, `Events`\> = (`err`, `c`) => `unknown`
 
-Defined in: [types.ts:341](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L341)
+Defined in: [types.ts:341](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L341)
 
 Type of a handler registered with [Plaza.onError](../classes/Plaza.md#onerror).
 

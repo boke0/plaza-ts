@@ -6,7 +6,7 @@
 
 # Class: Connection\<State\>
 
-Defined in: [connection.ts:72](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L72)
+Defined in: [connection.ts:72](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L72)
 
 Represents a single WebSocket connection.
 
@@ -32,7 +32,7 @@ Application-defined state type
 
 > `readonly` **id**: `string`
 
-Defined in: [connection.ts:77](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L77)
+Defined in: [connection.ts:77](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L77)
 
 Stable identifier of the connection. Generation is configurable via
 [PlazaOptions.idFactory](../interfaces/PlazaOptions.md#idfactory).
@@ -43,7 +43,7 @@ Stable identifier of the connection. Generation is configurable via
 
 > **state**: `State`
 
-Defined in: [connection.ts:82](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L82)
+Defined in: [connection.ts:82](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L82)
 
 Application-defined metadata. Patch with [Connection.setState](#setstate).
 
@@ -55,7 +55,7 @@ Application-defined metadata. Patch with [Connection.setState](#setstate).
 
 > **get** **tags**(): `ReadonlySet`\<`string`\>
 
-Defined in: [connection.ts:117](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L117)
+Defined in: [connection.ts:117](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L117)
 
 Read-only view of the tags attached to this connection.
 
@@ -71,7 +71,7 @@ Read-only view of the tags attached to this connection.
 
 > **get** **channels**(): `ReadonlySet`\<`string`\>
 
-Defined in: [connection.ts:124](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L124)
+Defined in: [connection.ts:124](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L124)
 
 Read-only view of the channels this connection belongs to.
 
@@ -83,9 +83,9 @@ Read-only view of the channels this connection belongs to.
 
 ### setTag()
 
-> **setTag**(`tag`): `void`
+> **setTag**(`tag`): `this`
 
-Defined in: [connection.ts:135](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L135)
+Defined in: [connection.ts:136](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L136)
 
 Attach a tag to this connection and index it in the registry.
 
@@ -101,15 +101,17 @@ Tag to attach
 
 #### Returns
 
-`void`
+`this`
+
+This connection, so calls can be chained.
 
 ***
 
 ### removeTag()
 
-> **removeTag**(`tag`): `void`
+> **removeTag**(`tag`): `this`
 
-Defined in: [connection.ts:149](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L149)
+Defined in: [connection.ts:152](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L152)
 
 Remove a tag from this connection and drop it from the index.
 
@@ -125,15 +127,17 @@ Tag to remove
 
 #### Returns
 
-`void`
+`this`
+
+This connection, so calls can be chained.
 
 ***
 
 ### joinChannel()
 
-> **joinChannel**(`channel`): `void`
+> **joinChannel**(`channel`): `this`
 
-Defined in: [connection.ts:162](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L162)
+Defined in: [connection.ts:167](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L167)
 
 Join the connection to a channel and add it to the channel index.
 
@@ -149,15 +153,17 @@ Channel to join
 
 #### Returns
 
-`void`
+`this`
+
+This connection, so calls can be chained.
 
 ***
 
 ### leaveChannel()
 
-> **leaveChannel**(`channel`): `void`
+> **leaveChannel**(`channel`): `this`
 
-Defined in: [connection.ts:176](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L176)
+Defined in: [connection.ts:183](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L183)
 
 Leave a channel and drop the connection from the channel index.
 
@@ -173,15 +179,17 @@ Channel to leave
 
 #### Returns
 
-`void`
+`this`
+
+This connection, so calls can be chained.
 
 ***
 
 ### setState()
 
-> **setState**(`partial`): `void`
+> **setState**(`partial`): `this`
 
-Defined in: [connection.ts:190](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L190)
+Defined in: [connection.ts:199](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L199)
 
 Patch `state` by shallow-merging the provided partial.
 
@@ -198,7 +206,9 @@ Keys and values to merge in
 
 #### Returns
 
-`void`
+`this`
+
+This connection, so calls can be chained.
 
 ***
 
@@ -206,7 +216,7 @@ Keys and values to merge in
 
 > **emit**(`event`, `payload`): `void`
 
-Defined in: [connection.ts:204](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L204)
+Defined in: [connection.ts:214](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L214)
 
 Send an event to this single connection.
 
@@ -237,7 +247,7 @@ Arbitrary payload
 
 > **close**(`code?`, `reason?`): `void`
 
-Defined in: [connection.ts:223](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L223)
+Defined in: [connection.ts:233](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L233)
 
 Close the connection.
 

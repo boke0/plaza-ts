@@ -82,8 +82,7 @@ const plaza = new Plaza<State, Env>()
     validator(z.object({ userId: z.string() })),
     (c) => {
       const { userId } = c.valid("json");
-      c.connection.setTag(userId);
-      c.connection.setState({ userId });
+      c.connection.setTag(userId).setState({ userId });
     },
   )
   .handle(
@@ -153,10 +152,11 @@ c.connection.tags                     // ReadonlySet<string>
 c.connection.channels                 // ReadonlySet<string>
 c.connection.state                    // your app-defined State
 
-c.connection.setTag("user-123");
-c.connection.joinChannel("room-7");
-c.connection.setState({ role: "admin" });
-c.connection.emit("event", payload);  // send to just this connection
+c.connection
+  .setTag("user-123")
+  .joinChannel("room-7")
+  .setState({ role: "admin" });        // mutators are chainable
+c.connection.emit("event", payload);   // send to just this connection
 c.connection.close(1000, "bye");
 ```
 

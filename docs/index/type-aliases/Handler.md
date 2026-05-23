@@ -8,7 +8,7 @@
 
 > **Handler**\<`State`, `Env`, `Payload`, `Events`\> = (`c`) => `unknown`
 
-Defined in: [types.ts:292](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L292)
+Defined in: [types.ts:292](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L292)
 
 Type of an event handler registered with [Plaza.handle](../classes/Plaza.md#handle) (or the
 deprecated [Plaza.on](../classes/Plaza.md#on)).

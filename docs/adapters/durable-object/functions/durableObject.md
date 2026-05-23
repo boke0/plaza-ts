@@ -8,7 +8,7 @@
 
 > **durableObject**\<`State`, `Env`, `Events`, `Tasks`\>(`plaza`): (`ctx`, `env`) => `DurableObject`\<`Env`, \{ \}\> & `object`
 
-Defined in: [adapters/durable-object.ts:39](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/adapters/durable-object.ts#L39)
+Defined in: [adapters/durable-object.ts:39](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/adapters/durable-object.ts#L39)
 
 Build a Cloudflare Durable Object base class that wires Plaza's WebSocket
 lifecycle automatically.
