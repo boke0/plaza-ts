@@ -131,12 +131,14 @@ export class Connection<State = Record<string, unknown>> {
    * No-op when the tag is already present or the connection is closed.
    *
    * @param tag - Tag to attach
+   * @returns This connection, so calls can be chained.
    */
-  setTag(tag: string): void {
-    if (!this._alive || this._tags.has(tag)) return;
+  setTag(tag: string): this {
+    if (!this._alive || this._tags.has(tag)) return this;
     this._tags.add(tag);
     this._registry.indexTag(this, tag);
     this._dirty = true;
+    return this;
   }
 
   /**
@@ -145,11 +147,13 @@ export class Connection<State = Record<string, unknown>> {
    * No-op when the tag is not currently attached.
    *
    * @param tag - Tag to remove
+   * @returns This connection, so calls can be chained.
    */
-  removeTag(tag: string): void {
-    if (!this._tags.delete(tag)) return;
+  removeTag(tag: string): this {
+    if (!this._tags.delete(tag)) return this;
     this._registry.unindexTag(this, tag);
     this._dirty = true;
+    return this;
   }
 
   /**
@@ -158,12 +162,14 @@ export class Connection<State = Record<string, unknown>> {
    * No-op when already joined or when the connection is closed.
    *
    * @param channel - Channel to join
+   * @returns This connection, so calls can be chained.
    */
-  joinChannel(channel: string): void {
-    if (!this._alive || this._channels.has(channel)) return;
+  joinChannel(channel: string): this {
+    if (!this._alive || this._channels.has(channel)) return this;
     this._channels.add(channel);
     this._registry.indexChannel(this, channel);
     this._dirty = true;
+    return this;
   }
 
   /**
@@ -172,11 +178,13 @@ export class Connection<State = Record<string, unknown>> {
    * No-op when the connection has not joined the channel.
    *
    * @param channel - Channel to leave
+   * @returns This connection, so calls can be chained.
    */
-  leaveChannel(channel: string): void {
-    if (!this._channels.delete(channel)) return;
+  leaveChannel(channel: string): this {
+    if (!this._channels.delete(channel)) return this;
     this._registry.unindexChannel(this, channel);
     this._dirty = true;
+    return this;
   }
 
   /**
@@ -186,10 +194,12 @@ export class Connection<State = Record<string, unknown>> {
    * overwritten.
    *
    * @param partial - Keys and values to merge in
+   * @returns This connection, so calls can be chained.
    */
-  setState(partial: Partial<State>): void {
+  setState(partial: Partial<State>): this {
     Object.assign(this.state as object, partial);
     this._dirty = true;
+    return this;
   }
 
   /**

@@ -6,7 +6,7 @@
 
 # Class: PlazaKindMismatchError
 
-Defined in: [plaza.ts:38](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L38)
+Defined in: [plaza.ts:38](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L38)
 
 Thrown / dispatched when a route is invoked through the wrong kind of entry
 point: e.g. a client sends a name registered as a [task](Plaza.md#task),
@@ -23,7 +23,7 @@ or [Plaza.runTask](Plaza.md#runtask) is called with a name registered as a
 
 > **new PlazaKindMismatchError**(`routeName`, `expected`, `actual`): `PlazaKindMismatchError`
 
-Defined in: [plaza.ts:46](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L46)
+Defined in: [plaza.ts:46](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L46)
 
 #### Parameters
 
@@ -53,7 +53,7 @@ Defined in: [plaza.ts:46](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df
 
 > `readonly` **expected**: `"message"` \| `"task"`
 
-Defined in: [plaza.ts:40](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L40)
+Defined in: [plaza.ts:40](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L40)
 
 Kind expected by the caller (e.g. `"message"` for incoming WS frames).
 
@@ -63,7 +63,7 @@ Kind expected by the caller (e.g. `"message"` for incoming WS frames).
 
 > `readonly` **actual**: `"message"` \| `"task"`
 
-Defined in: [plaza.ts:42](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L42)
+Defined in: [plaza.ts:42](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L42)
 
 Kind actually registered for `routeName`.
 
@@ -73,6 +73,6 @@ Kind actually registered for `routeName`.
 
 > `readonly` **routeName**: `string`
 
-Defined in: [plaza.ts:44](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L44)
+Defined in: [plaza.ts:44](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L44)
 
 Name of the route that was looked up.

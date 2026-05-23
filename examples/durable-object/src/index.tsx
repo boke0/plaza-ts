@@ -24,8 +24,7 @@ const auth = new Plaza<State, Env>().on(
   ),
   (c) => {
     const { userId, role } = c.valid("json");
-    c.connection.setTag(userId);
-    c.connection.setState({ userId, role });
+    c.connection.setTag(userId).setState({ userId, role });
     c.connection.emit("authed", { userId, role });
   },
 );

@@ -6,7 +6,7 @@
 
 # Interface: ConnectContext\<State, Env, Events\>
 
-Defined in: [types.ts:218](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L218)
+Defined in: [types.ts:218](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L218)
 
 Context passed to [onConnect](../classes/Plaza.md#onconnect) handlers.
 
@@ -34,7 +34,7 @@ Context passed to [onConnect](../classes/Plaza.md#onconnect) handlers.
 
 > `readonly` **kind**: `"message"`
 
-Defined in: [types.ts:134](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L134)
+Defined in: [types.ts:134](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L134)
 
 Always `"message"` — discriminator with [TaskContext](TaskContext.md).
 
@@ -48,7 +48,7 @@ Always `"message"` — discriminator with [TaskContext](TaskContext.md).
 
 > `readonly` **connection**: [`Connection`](../classes/Connection.md)\<`State`\>
 
-Defined in: [types.ts:136](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L136)
+Defined in: [types.ts:136](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L136)
 
 The connection that produced the current event.
 
@@ -62,7 +62,7 @@ The connection that produced the current event.
 
 > `readonly` **event**: `string`
 
-Defined in: [types.ts:141](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L141)
+Defined in: [types.ts:141](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L141)
 
 Event name being dispatched. For lifecycle hooks this is one of
 `"connect"`, `"close"`, `"error"`, etc.
@@ -77,7 +77,7 @@ Event name being dispatched. For lifecycle hooks this is one of
 
 > `readonly` **env**: `Env`
 
-Defined in: [types.ts:143](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L143)
+Defined in: [types.ts:143](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L143)
 
 Environment bindings (`Env` of the Durable Object on Cloudflare).
 
@@ -91,7 +91,7 @@ Environment bindings (`Env` of the Durable Object on Cloudflare).
 
 > `readonly` **executionCtx**: `DurableObjectState`
 
-Defined in: [types.ts:145](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L145)
+Defined in: [types.ts:145](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L145)
 
 Execution context (`DurableObjectState` on Cloudflare).
 
@@ -105,7 +105,7 @@ Execution context (`DurableObjectState` on Cloudflare).
 
 > **emit**(`event`, `payload`): `void`
 
-Defined in: [types.ts:153](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L153)
+Defined in: [types.ts:153](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L153)
 
 Send an event to every connected client.
 
@@ -137,7 +137,7 @@ Arbitrary payload
 
 > **to**(`sel`): [`Targets`](../classes/Targets.md)\<`State`, `Env`, `Events`\>
 
-Defined in: [types.ts:160](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L160)
+Defined in: [types.ts:160](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L160)
 
 Build a [Targets](../classes/Targets.md) narrowed by the given selector.
 
@@ -163,7 +163,7 @@ Narrowing criterion ([Selector](../type-aliases/Selector.md))
 
 > **except**(...`conns`): [`Targets`](../classes/Targets.md)\<`State`, `Env`, `Events`\>
 
-Defined in: [types.ts:167](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L167)
+Defined in: [types.ts:167](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L167)
 
 Build a [Targets](../classes/Targets.md) that excludes the given connections.
 
@@ -189,7 +189,7 @@ Connections to exclude
 
 > **runTask**(`name`, `payload`): `Promise`\<`void`\>
 
-Defined in: [types.ts:176](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L176)
+Defined in: [types.ts:176](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L176)
 
 Invoke a server-side task registered via [Plaza.task](../classes/Plaza.md#task).
 

@@ -8,7 +8,7 @@
 
 > **Context**\<`State`, `Env`, `Events`\> = [`MessageContext`](../interfaces/MessageContext.md)\<`State`, `Env`, `Events`\> \| [`TaskContext`](../interfaces/TaskContext.md)\<`State`, `Env`, `Events`\>
 
-Defined in: [types.ts:187](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L187)
+Defined in: [types.ts:187](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/types.ts#L187)
 
 Union of contexts that a middleware can receive: either a client-originated
 [MessageContext](../interfaces/MessageContext.md) or a server-originated [TaskContext](../interfaces/TaskContext.md).

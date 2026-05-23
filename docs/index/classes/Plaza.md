@@ -6,7 +6,7 @@
 
 # Class: Plaza\<State, Env, Events, Tasks\>
 
-Defined in: [plaza.ts:149](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L149)
+Defined in: [plaza.ts:149](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L149)
 
 Core class of the type-safe WebSocket framework.
 
@@ -65,7 +65,7 @@ Map of registered events. Extended by every call to `.on(...)`.
 
 > **new Plaza**\<`State`, `Env`, `Events`, `Tasks`\>(`options?`): `Plaza`\<`State`, `Env`, `Events`, `Tasks`\>
 
-Defined in: [plaza.ts:184](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L184)
+Defined in: [plaza.ts:184](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L184)
 
 #### Parameters
 
@@ -85,7 +85,7 @@ Defined in: [plaza.ts:184](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8d
 
 > **use**(`mw`): `this`
 
-Defined in: [plaza.ts:210](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L210)
+Defined in: [plaza.ts:210](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L210)
 
 Register a middleware that runs before every event handler.
 
@@ -123,7 +123,7 @@ plaza.use(async (c, next) => {
 
 > **serialize**(`fn`): `this`
 
-Defined in: [plaza.ts:223](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L223)
+Defined in: [plaza.ts:223](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L223)
 
 Replace the function that encodes outgoing frames.
 
@@ -149,7 +149,7 @@ This instance (for chaining)
 
 > **deserialize**(`fn`): `this`
 
-Defined in: [plaza.ts:236](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L236)
+Defined in: [plaza.ts:236](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L236)
 
 Replace the function that decodes incoming frames.
 
@@ -175,7 +175,7 @@ This instance (for chaining)
 
 > **onConnect**(`handler`): `this`
 
-Defined in: [plaza.ts:249](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L249)
+Defined in: [plaza.ts:249](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L249)
 
 Register a handler to run immediately after a WebSocket connects.
 
@@ -201,7 +201,7 @@ This instance (for chaining)
 
 > **onClose**(`handler`): `this`
 
-Defined in: [plaza.ts:262](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L262)
+Defined in: [plaza.ts:262](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L262)
 
 Register a handler to run immediately after a connection closes.
 
@@ -227,7 +227,7 @@ This instance (for chaining)
 
 > **onError**(`handler`): `this`
 
-Defined in: [plaza.ts:275](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L275)
+Defined in: [plaza.ts:275](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L275)
 
 Register a handler that captures exceptions thrown from handlers or middleware.
 
@@ -255,7 +255,7 @@ This instance (for chaining)
 
 > **handle**\<`K`, `V`, `P`\>(`event`, ...`args`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>, `Tasks`\>
 
-Defined in: [plaza.ts:306](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L306)
+Defined in: [plaza.ts:306](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L306)
 
 Register a handler for a client-originated WebSocket message.
 
@@ -320,7 +320,7 @@ plaza.handle(
 
 > **handle**\<`K`\>(`event`, `handler`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>, `Tasks`\>
 
-Defined in: [plaza.ts:314](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L314)
+Defined in: [plaza.ts:314](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L314)
 
 Register a handler for a client-originated WebSocket message.
 
@@ -375,7 +375,7 @@ plaza.handle(
 
 > **task**\<`K`, `V`, `P`\>(`event`, ...`args`): `Plaza`\<`State`, `Env`, `Events`, `Tasks` & `Record`\<`K`, `P`\>\>
 
-Defined in: [plaza.ts:359](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L359)
+Defined in: [plaza.ts:359](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L359)
 
 Register a handler for a server-side task.
 
@@ -443,7 +443,7 @@ plaza.task(
 
 > **task**\<`K`\>(`event`, `handler`): `Plaza`\<`State`, `Env`, `Events`, `Tasks` & `Record`\<`K`, `unknown`\>\>
 
-Defined in: [plaza.ts:367](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L367)
+Defined in: [plaza.ts:367](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L367)
 
 Register a handler for a server-side task.
 
@@ -500,7 +500,7 @@ plaza.task(
 
 > **on**\<`K`, `V`, `P`\>(`event`, ...`args`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>, `Tasks`\>
 
-Defined in: [plaza.ts:389](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L389)
+Defined in: [plaza.ts:389](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L389)
 
 Deprecated alias for [Plaza.handle](#handle).
 
@@ -541,7 +541,7 @@ future release.
 
 > **on**\<`K`\>(`event`, `handler`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>, `Tasks`\>
 
-Defined in: [plaza.ts:397](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L397)
+Defined in: [plaza.ts:397](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L397)
 
 Deprecated alias for [Plaza.handle](#handle).
 
@@ -578,7 +578,7 @@ future release.
 
 > **route**\<`S2`, `En2`, `E2`, `T2`\>(`sub`): `Plaza`\<`State`, `Env`, `Events` & `E2`, `Tasks` & `T2`\>
 
-Defined in: [plaza.ts:435](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L435)
+Defined in: [plaza.ts:435](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L435)
 
 Merge another `Plaza` instance into this one.
 
@@ -639,7 +639,7 @@ const app = new Plaza()
 
 > **route**\<`P`, `S2`, `En2`, `E2`, `T2`\>(`prefix`, `sub`): `Plaza`\<`State`, `Env`, `Events` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `E2`\>, `Tasks` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `T2`\>\>
 
-Defined in: [plaza.ts:441](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L441)
+Defined in: [plaza.ts:441](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L441)
 
 Merge another `Plaza` instance into this one.
 
@@ -710,7 +710,7 @@ const app = new Plaza()
 
 > **upgrade**(`req`, `ctx`, `env`): `Promise`\<`Response`\>
 
-Defined in: [plaza.ts:501](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L501)
+Defined in: [plaza.ts:501](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L501)
 
 Accept an HTTP request as a WebSocket upgrade and register the new connection.
 
@@ -750,7 +750,7 @@ Environment bindings
 
 > **dispatch**(`ws`, `message`, `ctx`, `env`): `Promise`\<`void`\>
 
-Defined in: [plaza.ts:560](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L560)
+Defined in: [plaza.ts:560](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L560)
 
 Deserialize an incoming message and dispatch it to the matching handler.
 
@@ -794,7 +794,7 @@ Environment bindings
 
 > **runTask**\<`K`\>(`ctx`, `env`, `name`, `payload`): `Promise`\<`void`\>
 
-Defined in: [plaza.ts:622](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L622)
+Defined in: [plaza.ts:622](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L622)
 
 Invoke a server-side task by name.
 
@@ -852,7 +852,7 @@ Payload matching the task's validator output
 
 > **close**(`ws`, `code`, `reason`, `wasClean`, `ctx`, `env`): `Promise`\<`void`\>
 
-Defined in: [plaza.ts:698](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L698)
+Defined in: [plaza.ts:698](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L698)
 
 Handle a connection close and run the registered [onClose](#onclose) handlers.
 
@@ -908,7 +908,7 @@ Environment bindings
 
 > **error**(`ws`, `err`, `ctx`, `env`): `Promise`\<`void`\>
 
-Defined in: [plaza.ts:735](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L735)
+Defined in: [plaza.ts:735](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L735)
 
 Handle a low-level WebSocket error and run the registered [onError](#onerror) handlers.
 

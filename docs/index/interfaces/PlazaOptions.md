@@ -6,7 +6,7 @@
 
 # Interface: PlazaOptions
 
-Defined in: [plaza.ts:79](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L79)
+Defined in: [plaza.ts:79](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L79)
 
 Options accepted by the [Plaza](../classes/Plaza.md) constructor.
 
@@ -16,7 +16,7 @@ Options accepted by the [Plaza](../classes/Plaza.md) constructor.
 
 > `optional` **maxAttachmentBytes?**: `number`
 
-Defined in: [plaza.ts:88](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L88)
+Defined in: [plaza.ts:88](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L88)
 
 Maximum byte size of the serialized attachment written via
 `serializeAttachment` per connection.
@@ -35,7 +35,7 @@ Exceeding the limit throws [PlazaAttachmentTooLargeError](../classes/PlazaAttach
 
 > `optional` **idFactory?**: () => `string`
 
-Defined in: [plaza.ts:98](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L98)
+Defined in: [plaza.ts:98](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/plaza.ts#L98)
 
 Factory for generating connection ids.
 

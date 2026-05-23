@@ -6,7 +6,7 @@
 
 # Interface: PlazaAttachment\<State\>
 
-Defined in: [connection.ts:14](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L14)
+Defined in: [connection.ts:14](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L14)
 
 Connection snapshot persisted to and restored from a hibernating WebSocket.
 
@@ -27,7 +27,7 @@ Application-defined state type
 
 > **id**: `string`
 
-Defined in: [connection.ts:16](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L16)
+Defined in: [connection.ts:16](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L16)
 
 Stable identifier of the connection.
 
@@ -37,7 +37,7 @@ Stable identifier of the connection.
 
 > **tags**: `string`[]
 
-Defined in: [connection.ts:18](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L18)
+Defined in: [connection.ts:18](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L18)
 
 Tags currently attached to the connection.
 
@@ -47,7 +47,7 @@ Tags currently attached to the connection.
 
 > **channels**: `string`[]
 
-Defined in: [connection.ts:20](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L20)
+Defined in: [connection.ts:20](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L20)
 
 Channels the connection belongs to.
 
@@ -57,6 +57,6 @@ Channels the connection belongs to.
 
 > **state**: `State`
 
-Defined in: [connection.ts:22](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L22)
+Defined in: [connection.ts:22](https://github.com/boke0/plaza-ts/blob/20ad3bc368f55709ec968cd70f4e701017d71e9f/src/connection.ts#L22)
 
 Snapshot of the application-defined state.
