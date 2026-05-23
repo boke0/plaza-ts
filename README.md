@@ -7,6 +7,7 @@ Plaza gives you [Hono](https://hono.dev/)-like ergonomics for real-time apps: na
 ## Why Plaza?
 
 - **Event-name routing** — Just like HTTP routes, but for WebSocket messages.
+- **Server-initiated tasks** — Trigger handlers from alarms, RPC, or any server code with `.task()` and `runTask()`; clients can't fire them.
 - **Type-safe payloads** — Standard Schema validators turn `c.valid("json")` into a fully inferred object.
 - **[Hono](https://hono.dev/)-like middleware** — `.use()` for logging, auth, rate-limiting, anything you need before a handler runs.
 - **First-class targeting** — Send to a single connection, a tag, a channel, a predicate, or everyone. Indexed lookups are O(1).
@@ -46,7 +47,7 @@ const plaza = new Plaza()
   .onConnect((c) => {
     c.emit("system", { message: "a user joined" });
   })
-  .on(
+  .handle(
     "greeting",
     validator(z.object({ channel: z.string(), message: z.string() })),
     (c) => {
@@ -76,7 +77,7 @@ interface Env {
 }
 
 const plaza = new Plaza<State, Env>()
-  .on(
+  .handle(
     "authenticate",
     validator(z.object({ userId: z.string() })),
     (c) => {
@@ -85,14 +86,14 @@ const plaza = new Plaza<State, Env>()
       c.connection.setState({ userId });
     },
   )
-  .on(
+  .handle(
     "join",
     validator(z.object({ channel: z.string() })),
     (c) => {
       c.connection.joinChannel(c.valid("json").channel);
     },
   )
-  .on(
+  .handle(
     "message",
     validator(z.object({ channel: z.string(), text: z.string() })),
     (c) => {
@@ -136,6 +137,7 @@ The adapter takes care of:
 | `webSocketClose` | Fires your `.onClose` handlers |
 | `webSocketError` | Fires your `.onError` handlers |
 | Hibernation wake-up | Restores `tag` / `channel` / `state` from the WebSocket's attachment |
+| `runTask(name, payload)` (added) | Calls `plaza.runTask` with the bound `ctx` / `env` (see [Server-side tasks](#server-side-tasks)) |
 
 If you need to mix HTTP routes and WebSockets in the same Cloudflare Durable Object, drop down to the low-level API: `plaza.upgrade`, `plaza.dispatch`, `plaza.close`, `plaza.error`.
 
@@ -190,11 +192,11 @@ Prefer indexed targets on hot paths; reach for predicates when you need flexibil
 
 ### Middleware
 
-Middleware runs before every event handler, just like [Hono](https://hono.dev/):
+Middleware runs before every event handler, just like [Hono](https://hono.dev/). It runs for both client messages and server-side [tasks](#server-side-tasks); use the `c.kind` discriminator when you need to touch connection-only state:
 
 ```typescript
 plaza.use(async (c, next) => {
-  console.log(`[${c.connection.id}] ${c.event}`);
+  console.log(`[${c.kind}] ${c.event}`); // "message" or "task"
   await next();
 });
 ```
@@ -208,13 +210,13 @@ Split your app into modules and merge them. Per-module middleware only applies t
 ```typescript
 const auth = new Plaza()
   .use(rateLimit)
-  .on("login", ...)
-  .on("logout", ...);
+  .handle("login", ...)
+  .handle("logout", ...);
 
 const chat = new Plaza()
   .use(requireAuth)
-  .on("message", ...)
-  .on("typing", ...);
+  .handle("message", ...)
+  .handle("typing", ...);
 
 const app = new Plaza()
   .use(logger)         // applies to everything
@@ -228,6 +230,87 @@ export type AppType = typeof app;  // export for client-side type inference
 The prefix separator is up to you — use `"v1:"`, `"v1."`, `"v1/"`, whatever you like.
 
 Merged apps share one connection: `c.connection`, tags, channels, state, and `c.to(...)` all operate over the combined connection set.
+
+### Server-side tasks
+
+Sometimes you need to push to clients from server-only code — a Durable Object
+alarm, an RPC call from another Worker, or a follow-up action inside another
+handler. Register these with `.task()` and trigger them with `plaza.runTask()`:
+
+```typescript
+const plaza = new Plaza<{}, Env>()
+  .handle("subscribe", (c) => {
+    c.connection.joinChannel("updates");
+  })
+  .task(
+    "broadcast-notice",
+    validator(z.object({ text: z.string() })),
+    (c) => {
+      // c.kind === "task" — no triggering connection, so c.connection is null.
+      c.to({ channel: "updates" }).emit("notice", { text: c.valid("json").text });
+    },
+  );
+
+// Fire a task. Returns Promise<void>; await it to know when handlers finish.
+await plaza.runTask(ctx, env, "broadcast-notice", { text: "maintenance in 5 min" });
+```
+
+Key differences vs `.handle()`:
+
+| | `.handle()` (client message) | `.task()` (server only) |
+|---|---|---|
+| Triggered by | `ws.send(...)` from a client | `plaza.runTask(...)` from your code |
+| `c.kind` | `"message"` | `"task"` |
+| `c.connection` | `Connection<State>` | `null` |
+
+Tasks live on a separate `Tasks` type generic, so clients can't see them through `InferEvents` and `runTask` only accepts registered task names. See [`Plaza`](./docs/index/classes/Plaza.md) and [`InferTasks`](./docs/index/type-aliases/InferTasks.md) for the full type surface.
+
+Cross-kind invocation is rejected:
+
+- A client sending a name registered as `.task()` triggers your `.onError(...)` handlers with [`PlazaKindMismatchError`](./docs/index/classes/PlazaKindMismatchError.md).
+- `plaza.runTask(...)` called with a `.handle()` name throws `PlazaKindMismatchError`; an unregistered name throws [`PlazaUnknownTaskError`](./docs/index/classes/PlazaUnknownTaskError.md).
+
+#### Calling `runTask` from inside handlers
+
+Both message handlers and task handlers can chain tasks via `c.runTask()` (it
+reuses the current `ctx` / `env`):
+
+```typescript
+plaza
+  .task("cleanup", (c) => { /* ... */ })
+  .handle("admin-trigger", async (c) => {
+    await c.runTask("cleanup", { reason: "manual" });
+  });
+```
+
+#### From a Durable Object
+
+The DO adapter exposes `this.runTask(name, payload)` so alarms and RPC methods
+don't have to thread `ctx` / `env` themselves:
+
+```typescript
+export class ChatRoom extends durableObject(plaza) {
+  override async alarm() {
+    await this.runTask("broadcast-notice", { text: "scheduled ping" });
+  }
+}
+```
+
+#### Middleware applies to both kinds
+
+`.use()` middleware runs for both client messages and server tasks. Discriminate
+via `c.kind` when you need to access connection-only state:
+
+```typescript
+plaza.use(async (c, next) => {
+  console.log(`[${c.kind}] ${c.event}`);
+  if (c.kind === "message" && !c.connection.state.userId) {
+    c.connection.emit("error", { reason: "unauth" });
+    return; // do not call next()
+  }
+  await next();
+});
+```
 
 ### Custom wire format
 
@@ -256,13 +339,14 @@ WebSocket handshakes can't carry arbitrary headers, so you have two options:
 ```typescript
 const chat = new Plaza<State>()
   .use(async (c, next) => {
-    if (!c.connection.state.userId) {
+    // Only gate client messages — tasks come from trusted server code.
+    if (c.kind === "message" && !c.connection.state.userId) {
       c.connection.emit("error", { reason: "not authenticated" });
-      return;  // do not call next()
+      return; // do not call next()
     }
     await next();
   })
-  .on("message", ...);
+  .handle("message", ...);
 ```
 
 ## Lifecycle hooks
@@ -271,10 +355,19 @@ const chat = new Plaza<State>()
 plaza
   .onConnect((c) => { /* connection opened */ })
   .onClose((c)   => { /* c.code, c.reason, c.wasClean */ })
-  .onError((err, c) => { /* exception inside a handler */ });
+  .onError((err, c) => { /* exception inside a handler or task */ });
 ```
 
-All three are stackable and run in the order they were registered, including hooks attached to sub-Plazas.
+All three are stackable and run in the order they were registered, including hooks attached to sub-Plazas. `onConnect` / `onClose` only fire for client connections; `onError` is also invoked for failures inside `.task()` handlers (with `c.kind === "task"`).
+
+## Migrating from `.on()`
+
+`.handle()` replaces `.on()` for registering client-message handlers. `.on()` is still exported as a deprecated alias and forwards to `.handle()`, so existing code keeps working — but new code should prefer `.handle()` for symmetry with `.task()`.
+
+```diff
+- plaza.on("greeting", ...)
++ plaza.handle("greeting", ...)
+```
 
 ## Example
 

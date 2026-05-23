@@ -21,7 +21,8 @@ export interface CloseInfo {
  * @internal
  */
 export class PlazaContext<State, Env, Events extends EventMap> {
-  readonly connection: Connection<State>;
+  readonly kind: "message" | "task";
+  readonly connection: Connection<State> | null;
   readonly event: string;
   readonly env: Env;
   readonly executionCtx: DurableObjectState;
@@ -33,14 +34,17 @@ export class PlazaContext<State, Env, Events extends EventMap> {
 
   private readonly registry: ConnectionRegistry<State>;
   private readonly serialize: SerializeFn;
+  private readonly _runTask: (name: string, payload: unknown) => Promise<void>;
 
   constructor(opts: {
     registry: ConnectionRegistry<State>;
     serialize: SerializeFn;
-    connection: Connection<State>;
+    connection: Connection<State> | null;
     event: string;
     env: Env;
     executionCtx: DurableObjectState;
+    runTask: (name: string, payload: unknown) => Promise<void>;
+    kind?: "message" | "task";
     closeInfo?: CloseInfo;
   }) {
     this.registry = opts.registry;
@@ -49,11 +53,17 @@ export class PlazaContext<State, Env, Events extends EventMap> {
     this.event = opts.event;
     this.env = opts.env;
     this.executionCtx = opts.executionCtx;
+    this._runTask = opts.runTask;
+    this.kind = opts.kind ?? "message";
     if (opts.closeInfo) {
       this.code = opts.closeInfo.code;
       this.reason = opts.closeInfo.reason;
       this.wasClean = opts.closeInfo.wasClean;
     }
+  }
+
+  runTask(name: string, payload: unknown): Promise<void> {
+    return this._runTask(name, payload);
   }
 
   emit(event: string, payload: unknown): void {

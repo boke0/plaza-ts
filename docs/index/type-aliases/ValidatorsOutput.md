@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -8,7 +8,7 @@
 
 > **ValidatorsOutput**\<`V`\> = `UnionToIntersection`\<`{ [I in keyof V]: V[I] extends Validator<infer O> ? O : never }`\[`number`\]\>
 
-Defined in: types.ts:64
+Defined in: [types.ts:64](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L64)
 
 Intersects the outputs of multiple [Validator](../interfaces/Validator.md)s into a single type.
 

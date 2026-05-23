@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../../README.md)
+[**plaza-ts v1.0.0**](../../../README.md)
 
 ***
 
@@ -6,9 +6,9 @@
 
 # Function: durableObject()
 
-> **durableObject**\<`State`, `Env`, `Events`\>(`plaza`): (`ctx`, `env`) => `DurableObject`\<`Env`, \{ \}\> & `object`
+> **durableObject**\<`State`, `Env`, `Events`, `Tasks`\>(`plaza`): (`ctx`, `env`) => `DurableObject`\<`Env`, \{ \}\> & `object`
 
-Defined in: adapters/durable-object.ts:39
+Defined in: [adapters/durable-object.ts:39](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/adapters/durable-object.ts#L39)
 
 Build a Cloudflare Durable Object base class that wires Plaza's WebSocket
 lifecycle automatically.
@@ -38,11 +38,15 @@ Environment bindings of the Durable Object
 
 Map of registered events
 
+### Tasks
+
+`Tasks` *extends* [`EventMap`](../../../index/type-aliases/EventMap.md)
+
 ## Parameters
 
 ### plaza
 
-[`Plaza`](../../../index/classes/Plaza.md)\<`State`, `Env`, `Events`\>
+[`Plaza`](../../../index/classes/Plaza.md)\<`State`, `Env`, `Events`, `Tasks`\>
 
 The Plaza instance whose handlers should drive this DO
 

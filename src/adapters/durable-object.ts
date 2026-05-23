@@ -40,7 +40,8 @@ export function durableObject<
   State extends Record<string, unknown>,
   Env,
   Events extends EventMap,
->(plaza: Plaza<State, Env, Events>) {
+  Tasks extends EventMap,
+>(plaza: Plaza<State, Env, Events, Tasks>) {
   abstract class PlazaDurableObject extends DurableObject<Env> {
     /** @internal */
     private _rehydrated = false;
@@ -84,6 +85,21 @@ export function durableObject<
       this._ensureRehydrated();
       await plaza.error(ws, err, this.ctx, this.env);
     }
+
+    /**
+     * Invoke a server-side task registered via {@link Plaza.task}.
+     *
+     * Equivalent to calling `plaza.runTask(this.ctx, this.env, name, payload)`,
+     * but reuses the bound `ctx` / `env` so callers don't have to thread them
+     * through.
+     */
+    async runTask<K extends keyof Tasks & string>(
+      name: K,
+      payload: Tasks[K],
+    ): Promise<void> {
+      this._ensureRehydrated();
+      await plaza.runTask(this.ctx, this.env, name, payload);
+    }
   }
 
   return PlazaDurableObject as unknown as new (
@@ -99,5 +115,9 @@ export function durableObject<
       wasClean: boolean,
     ): Promise<void>;
     webSocketError(ws: WebSocket, err: unknown): Promise<void>;
+    runTask<K extends keyof Tasks & string>(
+      name: K,
+      payload: Tasks[K],
+    ): Promise<void>;
   };
 }

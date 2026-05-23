@@ -1,6 +1,215 @@
 import { describe, expect, it } from "vitest";
-import { connect, sendFrame, sentEvents } from "./_test-harness.ts";
-import { Plaza } from "./plaza.ts";
+import {
+  connect,
+  fakeDOState,
+  sendFrame,
+  sentEvents,
+} from "./_test-harness.ts";
+import {
+  Plaza,
+  PlazaKindMismatchError,
+  PlazaUnknownTaskError,
+} from "./plaza.ts";
+import { validator } from "./validator.ts";
+import { z } from "zod";
+
+describe("Plaza.task / runTask", () => {
+  it("runs the task handler when plaza.runTask is invoked", async () => {
+    const seen: { event: string; payload: unknown }[] = [];
+    const plaza = new Plaza<{}, {}>().task("cleanup", (c) => {
+      seen.push({ event: c.event, payload: c.valid("json") });
+    });
+    const ctx = fakeDOState();
+    await plaza.runTask(ctx, {}, "cleanup", { reason: "alarm" });
+    expect(seen).toEqual([{ event: "cleanup", payload: { reason: "alarm" } }]);
+  });
+
+  it("broadcasts to all connected clients from a task handler", async () => {
+    const plaza = new Plaza<{}, {}>().task("announce", (c) => {
+      c.emit("announce", { text: "system reboot" });
+    });
+    const a = await connect(plaza, {});
+    const b = await connect(plaza, {});
+    await plaza.runTask(a.ctx, {}, "announce", {});
+    expect(sentEvents(a.ws)).toEqual([
+      { event: "announce", payload: { text: "system reboot" } },
+    ]);
+    expect(sentEvents(b.ws)).toEqual([
+      { event: "announce", payload: { text: "system reboot" } },
+    ]);
+  });
+
+  it("validates the task payload with the registered validator", async () => {
+    const seen: unknown[] = [];
+    const plaza = new Plaza<{}, {}>().task(
+      "tick",
+      validator(z.object({ at: z.number() })),
+      (c) => {
+        seen.push(c.valid("json"));
+      },
+    );
+    await plaza.runTask(fakeDOState(), {}, "tick", { at: 42 });
+    expect(seen).toEqual([{ at: 42 }]);
+  });
+
+  it("exposes kind = 'task' and connection = null in the task context", async () => {
+    let observedKind: string | null = null;
+    let observedConnection: unknown = "unset";
+    const plaza = new Plaza<{}, {}>().task("inspect", (c) => {
+      observedKind = c.kind;
+      observedConnection = c.connection;
+    });
+    await plaza.runTask(fakeDOState(), {}, "inspect", {});
+    expect(observedKind).toBe("task");
+    expect(observedConnection).toBeNull();
+  });
+
+  it("runs root middleware for both client messages and tasks", async () => {
+    const order: string[] = [];
+    const plaza = new Plaza<{}, {}>()
+      .use(async (c, next) => {
+        order.push(`mw:${c.kind}`);
+        await next();
+      })
+      .handle("ping", () => {
+        order.push("handle");
+      })
+      .task("cleanup", () => {
+        order.push("task");
+      });
+    const { ws, ctx } = await connect(plaza, {});
+    await sendFrame(plaza, ws, "ping", {}, {});
+    await plaza.runTask(ctx, {}, "cleanup", {});
+    expect(order).toEqual(["mw:message", "handle", "mw:task", "task"]);
+  });
+
+  it("c.runTask() chains from a message handler to a task handler", async () => {
+    const seen: string[] = [];
+    const plaza = new Plaza<{}, {}>()
+      .task("notify", (c) => {
+        seen.push(`notify:${(c.valid("json") as { msg: string }).msg}`);
+      })
+      .handle("trigger", async (c) => {
+        seen.push("handle-before");
+        await c.runTask("notify", { msg: "hi" });
+        seen.push("handle-after");
+      });
+    const { ws } = await connect(plaza, {});
+    await sendFrame(plaza, ws, "trigger", {}, {});
+    expect(seen).toEqual(["handle-before", "notify:hi", "handle-after"]);
+  });
+
+  it("c.runTask() works from within a task handler too", async () => {
+    const seen: string[] = [];
+    const plaza = new Plaza<{}, {}>()
+      .task("inner", () => {
+        seen.push("inner");
+      })
+      .task("outer", async (c) => {
+        seen.push("outer-before");
+        await c.runTask("inner", {});
+        seen.push("outer-after");
+      });
+    await plaza.runTask(fakeDOState(), {}, "outer", {});
+    expect(seen).toEqual(["outer-before", "inner", "outer-after"]);
+  });
+
+  it("middleware can branch on c.kind without touching c.connection on tasks", async () => {
+    const log: string[] = [];
+    const plaza = new Plaza<{ userId?: string }, {}>()
+      .use(async (c, next) => {
+        if (c.kind === "message") {
+          log.push(`msg-conn:${c.connection.id}`);
+        } else {
+          log.push("task-no-conn");
+        }
+        await next();
+      })
+      .handle("ping", () => {
+        log.push("handle");
+      })
+      .task("cleanup", () => {
+        log.push("task");
+      });
+    const { ws, ctx } = await connect(plaza, {});
+    await sendFrame(plaza, ws, "ping", {}, {});
+    await plaza.runTask(ctx, {}, "cleanup", {});
+    expect(log[1]).toBe("handle");
+    expect(log[2]).toBe("task-no-conn");
+    expect(log[3]).toBe("task");
+  });
+});
+
+describe("Plaza task/handle kind safety", () => {
+  it("fires onError with PlazaKindMismatchError when a client sends a task name", async () => {
+    const errors: unknown[] = [];
+    const plaza = new Plaza<{}, {}>()
+      .onError((err) => {
+        errors.push(err);
+      })
+      .task("cleanup", () => {
+        throw new Error("should not reach task from client");
+      });
+    const { ws } = await connect(plaza, {});
+    await sendFrame(plaza, ws, "cleanup", {}, {});
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toBeInstanceOf(PlazaKindMismatchError);
+    expect((errors[0] as PlazaKindMismatchError).expected).toBe("message");
+    expect((errors[0] as PlazaKindMismatchError).actual).toBe("task");
+  });
+
+  it("throws PlazaKindMismatchError when runTask is called with a handle name", async () => {
+    const plaza = new Plaza<{}, {}>().handle("ping", () => {});
+    await expect(
+      plaza.runTask(fakeDOState(), {}, "ping" as never, {} as never),
+    ).rejects.toBeInstanceOf(PlazaKindMismatchError);
+  });
+
+  it("throws PlazaUnknownTaskError when runTask is called with an unregistered name", async () => {
+    const plaza = new Plaza<{}, {}>();
+    await expect(
+      plaza.runTask(fakeDOState(), {}, "ghost" as never, {} as never),
+    ).rejects.toBeInstanceOf(PlazaUnknownTaskError);
+  });
+
+  it("still silently drops a truly unknown client event (no task with that name)", async () => {
+    const errors: unknown[] = [];
+    const plaza = new Plaza<{}, {}>().onError((err) => {
+      errors.push(err);
+    });
+    const { ws } = await connect(plaza, {});
+    await sendFrame(plaza, ws, "no-such-event", {}, {});
+    expect(errors).toEqual([]);
+  });
+});
+
+describe("Plaza.handle", () => {
+  it("registers a handler equivalent to .on()", async () => {
+    const seen: string[] = [];
+    const plaza = new Plaza<{}, {}, {}>().handle("ping", (c) => {
+      seen.push(c.event);
+      c.connection.emit("pong", { ok: true });
+    });
+    const { ws } = await connect(plaza, {});
+    await sendFrame(plaza, ws, "ping", {}, {});
+    expect(seen).toEqual(["ping"]);
+    expect(sentEvents(ws)).toEqual([{ event: "pong", payload: { ok: true } }]);
+  });
+
+  it("interoperates with .on() (last registration wins regardless of method)", async () => {
+    const seen: string[] = [];
+    const plaza = new Plaza<{}, {}, {}>()
+      .on("evt", () => {
+        seen.push("on");
+      })
+      .handle("evt", () => {
+        seen.push("handle");
+      });
+    const { ws } = await connect(plaza, {});
+    await sendFrame(plaza, ws, "evt", {}, {});
+    expect(seen).toEqual(["handle"]);
+  });
+});
 
 describe("Plaza.on", () => {
   it("dispatches events to the registered handler", async () => {
@@ -178,6 +387,29 @@ describe("Plaza.route", () => {
       "parent-close",
       "sub-close",
     ]);
+  });
+
+  it("merges sub-Plaza tasks and runs them via parent.runTask", async () => {
+    const seen: string[] = [];
+    const sub = new Plaza<{}, {}>().task("ping", () => {
+      seen.push("sub-task");
+    });
+    const parent = new Plaza<{}, {}>().route(sub);
+    await parent.runTask(fakeDOState(), {}, "ping", {});
+    expect(seen).toEqual(["sub-task"]);
+  });
+
+  it("prefixes sub-Plaza tasks when route(prefix, sub) is used", async () => {
+    const seen: string[] = [];
+    const sub = new Plaza<{}, {}>().task("ping", () => {
+      seen.push("hit");
+    });
+    const parent = new Plaza<{}, {}>().route("v1.", sub);
+    await expect(
+      parent.runTask(fakeDOState(), {}, "ping" as never, {} as never),
+    ).rejects.toBeInstanceOf(PlazaUnknownTaskError);
+    await parent.runTask(fakeDOState(), {}, "v1.ping", {});
+    expect(seen).toEqual(["hit"]);
   });
 
   it("supports nested route() chains, baking each layer's middleware once", async () => {

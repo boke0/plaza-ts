@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Class: Connection\<State\>
 
-Defined in: connection.ts:72
+Defined in: [connection.ts:72](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L72)
 
 Represents a single WebSocket connection.
 
@@ -16,7 +16,7 @@ and `state` to classify and address connections.
 ## Remarks
 
 `Connection` instances are not constructed by user code; you receive them
-from a [Context](../interfaces/Context.md) during dispatch.
+from a [Context](../type-aliases/Context.md) during dispatch.
 
 ## Type Parameters
 
@@ -32,7 +32,7 @@ Application-defined state type
 
 > `readonly` **id**: `string`
 
-Defined in: connection.ts:77
+Defined in: [connection.ts:77](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L77)
 
 Stable identifier of the connection. Generation is configurable via
 [PlazaOptions.idFactory](../interfaces/PlazaOptions.md#idfactory).
@@ -43,7 +43,7 @@ Stable identifier of the connection. Generation is configurable via
 
 > **state**: `State`
 
-Defined in: connection.ts:82
+Defined in: [connection.ts:82](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L82)
 
 Application-defined metadata. Patch with [Connection.setState](#setstate).
 
@@ -55,7 +55,7 @@ Application-defined metadata. Patch with [Connection.setState](#setstate).
 
 > **get** **tags**(): `ReadonlySet`\<`string`\>
 
-Defined in: connection.ts:117
+Defined in: [connection.ts:117](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L117)
 
 Read-only view of the tags attached to this connection.
 
@@ -71,7 +71,7 @@ Read-only view of the tags attached to this connection.
 
 > **get** **channels**(): `ReadonlySet`\<`string`\>
 
-Defined in: connection.ts:124
+Defined in: [connection.ts:124](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L124)
 
 Read-only view of the channels this connection belongs to.
 
@@ -85,7 +85,7 @@ Read-only view of the channels this connection belongs to.
 
 > **setTag**(`tag`): `void`
 
-Defined in: connection.ts:135
+Defined in: [connection.ts:135](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L135)
 
 Attach a tag to this connection and index it in the registry.
 
@@ -109,7 +109,7 @@ Tag to attach
 
 > **removeTag**(`tag`): `void`
 
-Defined in: connection.ts:149
+Defined in: [connection.ts:149](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L149)
 
 Remove a tag from this connection and drop it from the index.
 
@@ -133,7 +133,7 @@ Tag to remove
 
 > **joinChannel**(`channel`): `void`
 
-Defined in: connection.ts:162
+Defined in: [connection.ts:162](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L162)
 
 Join the connection to a channel and add it to the channel index.
 
@@ -157,7 +157,7 @@ Channel to join
 
 > **leaveChannel**(`channel`): `void`
 
-Defined in: connection.ts:176
+Defined in: [connection.ts:176](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L176)
 
 Leave a channel and drop the connection from the channel index.
 
@@ -181,7 +181,7 @@ Channel to leave
 
 > **setState**(`partial`): `void`
 
-Defined in: connection.ts:190
+Defined in: [connection.ts:190](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L190)
 
 Patch `state` by shallow-merging the provided partial.
 
@@ -206,7 +206,7 @@ Keys and values to merge in
 
 > **emit**(`event`, `payload`): `void`
 
-Defined in: connection.ts:204
+Defined in: [connection.ts:204](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L204)
 
 Send an event to this single connection.
 
@@ -237,7 +237,7 @@ Arbitrary payload
 
 > **close**(`code?`, `reason?`): `void`
 
-Defined in: connection.ts:223
+Defined in: [connection.ts:223](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/connection.ts#L223)
 
 Close the connection.
 

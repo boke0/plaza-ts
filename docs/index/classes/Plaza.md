@@ -1,12 +1,12 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
 [plaza-ts](../../README.md) / [index](../README.md) / Plaza
 
-# Class: Plaza\<State, Env, Events\>
+# Class: Plaza\<State, Env, Events, Tasks\>
 
-Defined in: plaza.ts:101
+Defined in: [plaza.ts:149](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L149)
 
 Core class of the type-safe WebSocket framework.
 
@@ -55,13 +55,17 @@ Environment bindings (`Env` of the Durable Object on Cloudflare).
 
 Map of registered events. Extended by every call to `.on(...)`.
 
+### Tasks
+
+`Tasks` *extends* [`EventMap`](../type-aliases/EventMap.md) = \{ \}
+
 ## Constructors
 
 ### Constructor
 
-> **new Plaza**\<`State`, `Env`, `Events`\>(`options?`): `Plaza`\<`State`, `Env`, `Events`\>
+> **new Plaza**\<`State`, `Env`, `Events`, `Tasks`\>(`options?`): `Plaza`\<`State`, `Env`, `Events`, `Tasks`\>
 
-Defined in: plaza.ts:133
+Defined in: [plaza.ts:184](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L184)
 
 #### Parameters
 
@@ -73,7 +77,7 @@ Defined in: plaza.ts:133
 
 #### Returns
 
-`Plaza`\<`State`, `Env`, `Events`\>
+`Plaza`\<`State`, `Env`, `Events`, `Tasks`\>
 
 ## Methods
 
@@ -81,7 +85,7 @@ Defined in: plaza.ts:133
 
 > **use**(`mw`): `this`
 
-Defined in: plaza.ts:159
+Defined in: [plaza.ts:210](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L210)
 
 Register a middleware that runs before every event handler.
 
@@ -119,7 +123,7 @@ plaza.use(async (c, next) => {
 
 > **serialize**(`fn`): `this`
 
-Defined in: plaza.ts:172
+Defined in: [plaza.ts:223](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L223)
 
 Replace the function that encodes outgoing frames.
 
@@ -145,7 +149,7 @@ This instance (for chaining)
 
 > **deserialize**(`fn`): `this`
 
-Defined in: plaza.ts:185
+Defined in: [plaza.ts:236](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L236)
 
 Replace the function that decodes incoming frames.
 
@@ -171,7 +175,7 @@ This instance (for chaining)
 
 > **onConnect**(`handler`): `this`
 
-Defined in: plaza.ts:198
+Defined in: [plaza.ts:249](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L249)
 
 Register a handler to run immediately after a WebSocket connects.
 
@@ -197,7 +201,7 @@ This instance (for chaining)
 
 > **onClose**(`handler`): `this`
 
-Defined in: plaza.ts:211
+Defined in: [plaza.ts:262](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L262)
 
 Register a handler to run immediately after a connection closes.
 
@@ -223,7 +227,7 @@ This instance (for chaining)
 
 > **onError**(`handler`): `this`
 
-Defined in: plaza.ts:224
+Defined in: [plaza.ts:275](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L275)
 
 Register a handler that captures exceptions thrown from handlers or middleware.
 
@@ -245,15 +249,15 @@ This instance (for chaining)
 
 ***
 
-### on()
+### handle()
 
 #### Call Signature
 
-> **on**\<`K`, `V`, `P`\>(`event`, ...`args`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>\>
+> **handle**\<`K`, `V`, `P`\>(`event`, ...`args`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>, `Tasks`\>
 
-Defined in: plaza.ts:255
+Defined in: [plaza.ts:306](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L306)
 
-Register a handler for a specific event name.
+Register a handler for a client-originated WebSocket message.
 
 Validators are optional and may be passed in any number. When multiple
 validators are provided their outputs are merged and surfaced through
@@ -295,14 +299,14 @@ Zero or more validators followed by a final [Handler](../type-aliases/Handler.md
 
 ##### Returns
 
-`Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>\>
+`Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>, `Tasks`\>
 
 A new Plaza type with the event added (for chaining)
 
 ##### Example
 
 ```ts
-plaza.on(
+plaza.handle(
   "join",
   validator(z.object({ channel: z.string() })),
   (c) => {
@@ -314,11 +318,11 @@ plaza.on(
 
 #### Call Signature
 
-> **on**\<`K`\>(`event`, `handler`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>\>
+> **handle**\<`K`\>(`event`, `handler`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>, `Tasks`\>
 
-Defined in: plaza.ts:263
+Defined in: [plaza.ts:314](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L314)
 
-Register a handler for a specific event name.
+Register a handler for a client-originated WebSocket message.
 
 Validators are optional and may be passed in any number. When multiple
 validators are provided their outputs are merged and surfaced through
@@ -346,14 +350,14 @@ Event name to handle
 
 ##### Returns
 
-`Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>\>
+`Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>, `Tasks`\>
 
 A new Plaza type with the event added (for chaining)
 
 ##### Example
 
 ```ts
-plaza.on(
+plaza.handle(
   "join",
   validator(z.object({ channel: z.string() })),
   (c) => {
@@ -365,13 +369,216 @@ plaza.on(
 
 ***
 
+### task()
+
+#### Call Signature
+
+> **task**\<`K`, `V`, `P`\>(`event`, ...`args`): `Plaza`\<`State`, `Env`, `Events`, `Tasks` & `Record`\<`K`, `P`\>\>
+
+Defined in: [plaza.ts:359](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L359)
+
+Register a handler for a server-side task.
+
+Tasks are dispatched via [Plaza.runTask](#runtask) (or [MessageContext.runTask](../interfaces/MessageContext.md#runtask)
+inside a handler). Unlike [Plaza.handle](#handle), tasks cannot be triggered
+by clients — the route map records the kind and rejects cross-kind
+dispatch.
+
+Validators behave identically to [Plaza.handle](#handle).
+
+##### Type Parameters
+
+###### K
+
+`K` *extends* `string`
+
+Task name (inferred as a string literal)
+
+###### V
+
+`V` *extends* readonly [`Validator`](../interfaces/Validator.md)\<`any`\>[]
+
+Tuple of [Validator](../interfaces/Validator.md)s
+
+###### P
+
+`P` = [`ValidatorsOutput`](../type-aliases/ValidatorsOutput.md)\<`V`\>
+
+Intersection of validator outputs (the payload type)
+
+##### Parameters
+
+###### event
+
+`K`
+
+Task name to handle
+
+###### args
+
+...\[`...V[]`, [`TaskHandler`](../type-aliases/TaskHandler.md)\<`State`, `Env`, `P`, `Events`\>\]
+
+Zero or more validators followed by a final
+[TaskHandler](../type-aliases/TaskHandler.md)
+
+##### Returns
+
+`Plaza`\<`State`, `Env`, `Events`, `Tasks` & `Record`\<`K`, `P`\>\>
+
+A new Plaza type with the task added (for chaining)
+
+##### Example
+
+```ts
+plaza.task(
+  "cleanup",
+  validator(z.object({ olderThan: z.number() })),
+  (c) => {
+    c.to({ channel: "all" }).emit("system", { kind: "cleanup" });
+  },
+);
+```
+
+#### Call Signature
+
+> **task**\<`K`\>(`event`, `handler`): `Plaza`\<`State`, `Env`, `Events`, `Tasks` & `Record`\<`K`, `unknown`\>\>
+
+Defined in: [plaza.ts:367](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L367)
+
+Register a handler for a server-side task.
+
+Tasks are dispatched via [Plaza.runTask](#runtask) (or [MessageContext.runTask](../interfaces/MessageContext.md#runtask)
+inside a handler). Unlike [Plaza.handle](#handle), tasks cannot be triggered
+by clients — the route map records the kind and rejects cross-kind
+dispatch.
+
+Validators behave identically to [Plaza.handle](#handle).
+
+##### Type Parameters
+
+###### K
+
+`K` *extends* `string`
+
+Task name (inferred as a string literal)
+
+##### Parameters
+
+###### event
+
+`K`
+
+Task name to handle
+
+###### handler
+
+[`TaskHandler`](../type-aliases/TaskHandler.md)\<`State`, `Env`, `unknown`, `Events`\>
+
+##### Returns
+
+`Plaza`\<`State`, `Env`, `Events`, `Tasks` & `Record`\<`K`, `unknown`\>\>
+
+A new Plaza type with the task added (for chaining)
+
+##### Example
+
+```ts
+plaza.task(
+  "cleanup",
+  validator(z.object({ olderThan: z.number() })),
+  (c) => {
+    c.to({ channel: "all" }).emit("system", { kind: "cleanup" });
+  },
+);
+```
+
+***
+
+### ~~on()~~
+
+#### Call Signature
+
+> **on**\<`K`, `V`, `P`\>(`event`, ...`args`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>, `Tasks`\>
+
+Defined in: [plaza.ts:389](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L389)
+
+Deprecated alias for [Plaza.handle](#handle).
+
+##### Type Parameters
+
+###### K
+
+`K` *extends* `string`
+
+###### V
+
+`V` *extends* readonly [`Validator`](../interfaces/Validator.md)\<`any`\>[]
+
+###### P
+
+`P` = [`ValidatorsOutput`](../type-aliases/ValidatorsOutput.md)\<`V`\>
+
+##### Parameters
+
+###### event
+
+`K`
+
+###### args
+
+...\[`...V[]`, [`Handler`](../type-aliases/Handler.md)\<`State`, `Env`, `P`, `Events` & `Record`\<`K`, `P`\>\>\]
+
+##### Returns
+
+`Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `P`\>, `Tasks`\>
+
+##### Deprecated
+
+Use [Plaza.handle](#handle) instead. `.on()` will be removed in a
+future release.
+
+#### Call Signature
+
+> **on**\<`K`\>(`event`, `handler`): `Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>, `Tasks`\>
+
+Defined in: [plaza.ts:397](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L397)
+
+Deprecated alias for [Plaza.handle](#handle).
+
+##### Type Parameters
+
+###### K
+
+`K` *extends* `string`
+
+##### Parameters
+
+###### event
+
+`K`
+
+###### handler
+
+[`Handler`](../type-aliases/Handler.md)\<`State`, `Env`, `unknown`, `Events` & `Record`\<`K`, `unknown`\>\>
+
+##### Returns
+
+`Plaza`\<`State`, `Env`, `Events` & `Record`\<`K`, `unknown`\>, `Tasks`\>
+
+##### Deprecated
+
+Use [Plaza.handle](#handle) instead. `.on()` will be removed in a
+future release.
+
+***
+
 ### route()
 
 #### Call Signature
 
-> **route**\<`S2`, `En2`, `E2`\>(`sub`): `Plaza`\<`State`, `Env`, `Events` & `E2`\>
+> **route**\<`S2`, `En2`, `E2`, `T2`\>(`sub`): `Plaza`\<`State`, `Env`, `Events` & `E2`, `Tasks` & `T2`\>
 
-Defined in: plaza.ts:305
+Defined in: [plaza.ts:435](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L435)
 
 Merge another `Plaza` instance into this one.
 
@@ -400,15 +607,19 @@ indexes — and `c.to(...)` targeting — span the entire merged graph.
 
 `E2` *extends* [`EventMap`](../type-aliases/EventMap.md)
 
+###### T2
+
+`T2` *extends* [`EventMap`](../type-aliases/EventMap.md)
+
 ##### Parameters
 
 ###### sub
 
-`Plaza`\<`S2`, `En2`, `E2`\>
+`Plaza`\<`S2`, `En2`, `E2`, `T2`\>
 
 ##### Returns
 
-`Plaza`\<`State`, `Env`, `Events` & `E2`\>
+`Plaza`\<`State`, `Env`, `Events` & `E2`, `Tasks` & `T2`\>
 
 A new Plaza type composed with the merged events (for chaining)
 
@@ -426,9 +637,9 @@ const app = new Plaza()
 
 #### Call Signature
 
-> **route**\<`P`, `S2`, `En2`, `E2`\>(`prefix`, `sub`): `Plaza`\<`State`, `Env`, `Events` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `E2`\>\>
+> **route**\<`P`, `S2`, `En2`, `E2`, `T2`\>(`prefix`, `sub`): `Plaza`\<`State`, `Env`, `Events` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `E2`\>, `Tasks` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `T2`\>\>
 
-Defined in: plaza.ts:308
+Defined in: [plaza.ts:441](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L441)
 
 Merge another `Plaza` instance into this one.
 
@@ -461,6 +672,10 @@ indexes — and `c.to(...)` targeting — span the entire merged graph.
 
 `E2` *extends* [`EventMap`](../type-aliases/EventMap.md)
 
+###### T2
+
+`T2` *extends* [`EventMap`](../type-aliases/EventMap.md)
+
 ##### Parameters
 
 ###### prefix
@@ -469,11 +684,11 @@ indexes — and `c.to(...)` targeting — span the entire merged graph.
 
 ###### sub
 
-`Plaza`\<`S2`, `En2`, `E2`\>
+`Plaza`\<`S2`, `En2`, `E2`, `T2`\>
 
 ##### Returns
 
-`Plaza`\<`State`, `Env`, `Events` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `E2`\>\>
+`Plaza`\<`State`, `Env`, `Events` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `E2`\>, `Tasks` & [`Prefix`](../type-aliases/Prefix.md)\<`P`, `T2`\>\>
 
 A new Plaza type composed with the merged events (for chaining)
 
@@ -495,7 +710,7 @@ const app = new Plaza()
 
 > **upgrade**(`req`, `ctx`, `env`): `Promise`\<`Response`\>
 
-Defined in: plaza.ts:366
+Defined in: [plaza.ts:501](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L501)
 
 Accept an HTTP request as a WebSocket upgrade and register the new connection.
 
@@ -535,7 +750,7 @@ Environment bindings
 
 > **dispatch**(`ws`, `message`, `ctx`, `env`): `Promise`\<`void`\>
 
-Defined in: plaza.ts:425
+Defined in: [plaza.ts:560](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L560)
 
 Deserialize an incoming message and dispatch it to the matching handler.
 
@@ -575,11 +790,69 @@ Environment bindings
 
 ***
 
+### runTask()
+
+> **runTask**\<`K`\>(`ctx`, `env`, `name`, `payload`): `Promise`\<`void`\>
+
+Defined in: [plaza.ts:622](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L622)
+
+Invoke a server-side task by name.
+
+Looks up the route registered via [Plaza.task](#task), builds a
+[TaskContext](../interfaces/TaskContext.md) (with `connection === null`), and runs the registered
+middleware chain, validators, and handler. The returned promise resolves
+once the handler completes, so callers may `await` it from a Durable
+Object alarm or RPC method.
+
+Errors thrown inside the chain are forwarded to [Plaza.onError](#onerror)
+handlers and then rethrown so the caller can react (e.g. let the platform
+retry an alarm).
+
+#### Type Parameters
+
+##### K
+
+`K` *extends* `string`
+
+Task name (must be a key of `Tasks`)
+
+#### Parameters
+
+##### ctx
+
+`DurableObjectState`
+
+Execution context (e.g. Durable Object `state`)
+
+##### env
+
+`Env`
+
+Environment bindings
+
+##### name
+
+`K`
+
+Registered task name
+
+##### payload
+
+`Tasks`\[`K`\]
+
+Payload matching the task's validator output
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
 ### close()
 
 > **close**(`ws`, `code`, `reason`, `wasClean`, `ctx`, `env`): `Promise`\<`void`\>
 
-Defined in: plaza.ts:505
+Defined in: [plaza.ts:698](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L698)
 
 Handle a connection close and run the registered [onClose](#onclose) handlers.
 
@@ -635,7 +908,7 @@ Environment bindings
 
 > **error**(`ws`, `err`, `ctx`, `env`): `Promise`\<`void`\>
 
-Defined in: plaza.ts:542
+Defined in: [plaza.ts:735](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/plaza.ts#L735)
 
 Handle a low-level WebSocket error and run the registered [onError](#onerror) handlers.
 

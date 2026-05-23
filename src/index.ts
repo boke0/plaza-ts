@@ -28,7 +28,11 @@
  * @packageDocumentation
  */
 
-export { Plaza } from "./plaza.ts";
+export {
+  Plaza,
+  PlazaKindMismatchError,
+  PlazaUnknownTaskError,
+} from "./plaza.ts";
 export type { PlazaOptions } from "./plaza.ts";
 export { validator, ValidationError } from "./validator.ts";
 export type { Validator } from "./validator.ts";
@@ -37,11 +41,15 @@ export type { PlazaAttachment } from "./connection.ts";
 export { Targets } from "./targets.ts";
 export type {
   Context,
+  MessageContext,
+  TaskContext,
   EventContext,
+  TaskEventContext,
   ConnectContext,
   CloseContext,
   Middleware,
   Handler,
+  TaskHandler,
   ConnectHandler,
   CloseHandler,
   ErrorHandler,
@@ -52,5 +60,6 @@ export type {
   Prefix,
   InferEvents,
   InferState,
+  InferTasks,
   ValidatorsOutput,
 } from "./types.ts";

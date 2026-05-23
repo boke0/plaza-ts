@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../../README.md)
+[**plaza-ts v1.0.0**](../../README.md)
 
 ***
 
@@ -8,7 +8,7 @@
 
 > **Selector**\<`State`\> = \{ `tag`: `string` \| `string`[]; \} \| \{ `channel`: `string` \| `string`[]; \} \| ((`conn`) => `boolean`)
 
-Defined in: types.ts:91
+Defined in: [types.ts:91](https://github.com/boke0/plaza-ts/blob/426bedbd9c3e8df60e130dbeccfab412875d3651/src/types.ts#L91)
 
 Selector for narrowing the set of connections to send to.
 

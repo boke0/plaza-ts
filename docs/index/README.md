@@ -1,4 +1,4 @@
-[**plaza-ts v0.0.0**](../README.md)
+[**plaza-ts v1.0.0**](../README.md)
 
 ***
 
@@ -37,6 +37,8 @@ export const ChatRoom = durableObject(plaza);
 
 - [PlazaAttachmentTooLargeError](classes/PlazaAttachmentTooLargeError.md)
 - [Connection](classes/Connection.md)
+- [PlazaKindMismatchError](classes/PlazaKindMismatchError.md)
+- [PlazaUnknownTaskError](classes/PlazaUnknownTaskError.md)
 - [Plaza](classes/Plaza.md)
 - [Targets](classes/Targets.md)
 - [ValidationError](classes/ValidationError.md)
@@ -45,10 +47,12 @@ export const ChatRoom = durableObject(plaza);
 
 - [PlazaAttachment](interfaces/PlazaAttachment.md)
 - [PlazaOptions](interfaces/PlazaOptions.md)
-- [Context](interfaces/Context.md)
+- [MessageContext](interfaces/MessageContext.md)
 - [EventContext](interfaces/EventContext.md)
 - [ConnectContext](interfaces/ConnectContext.md)
 - [CloseContext](interfaces/CloseContext.md)
+- [TaskContext](interfaces/TaskContext.md)
+- [TaskEventContext](interfaces/TaskEventContext.md)
 - [Validator](interfaces/Validator.md)
 
 ## Type Aliases
@@ -59,13 +63,16 @@ export const ChatRoom = durableObject(plaza);
 - [Selector](type-aliases/Selector.md)
 - [SerializeFn](type-aliases/SerializeFn.md)
 - [DeserializeFn](type-aliases/DeserializeFn.md)
+- [Context](type-aliases/Context.md)
 - [Handler](type-aliases/Handler.md)
+- [TaskHandler](type-aliases/TaskHandler.md)
 - [Middleware](type-aliases/Middleware.md)
 - [ConnectHandler](type-aliases/ConnectHandler.md)
 - [CloseHandler](type-aliases/CloseHandler.md)
 - [ErrorHandler](type-aliases/ErrorHandler.md)
 - [InferEvents](type-aliases/InferEvents.md)
 - [InferState](type-aliases/InferState.md)
+- [InferTasks](type-aliases/InferTasks.md)
 
 ## Functions
 

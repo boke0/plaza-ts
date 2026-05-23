@@ -61,6 +61,9 @@ const plaza = new Plaza<State, Env>()
   })
   .on("self-close", (c) => {
     c.connection.close(1000, "client requested");
+  })
+  .task("broadcast", validator(z.object({ text: z.string() })), (c) => {
+    c.emit("broadcast", { text: c.valid("json").text });
   });
 
 export class ChatRoom extends durableObject(plaza) {

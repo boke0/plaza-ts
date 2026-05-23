@@ -199,3 +199,25 @@ describe("DO adapter — extends-class", () => {
     });
   });
 });
+
+describe("DO adapter — runTask", () => {
+  it("invokes a server-side task and broadcasts to connected clients", async () => {
+    const s = await openSocket("runtask");
+    await s.waitFor(1); // welcome
+
+    const id = testEnv.CHAT_ROOM.idFromName("runtask");
+    const stub = testEnv.CHAT_ROOM.get(id);
+    await runInDurableObject(stub, async (instance) => {
+      const obj = instance as {
+        runTask: (name: string, payload: unknown) => Promise<void>;
+      };
+      expect(typeof obj.runTask).toBe("function");
+      await obj.runTask("broadcast", { text: "hello from server" });
+    });
+
+    const frame = await s.waitFor(2);
+    expect(frame.event).toBe("broadcast");
+    expect(frame.payload).toEqual({ text: "hello from server" });
+    s.ws.close();
+  });
+});
