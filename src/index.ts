@@ -31,7 +31,7 @@
 export {
   Plaza,
   PlazaKindMismatchError,
-  PlazaUnknownTaskError,
+  PlazaUnknownEventError,
 } from "./plaza.ts";
 export type { PlazaOptions } from "./plaza.ts";
 export { validator, ValidationError } from "./validator.ts";

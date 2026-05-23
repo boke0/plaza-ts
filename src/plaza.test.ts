@@ -8,7 +8,7 @@ import {
 import {
   Plaza,
   PlazaKindMismatchError,
-  PlazaUnknownTaskError,
+  PlazaUnknownEventError,
 } from "./plaza.ts";
 import { validator } from "./validator.ts";
 import { z } from "zod";
@@ -165,21 +165,22 @@ describe("Plaza task/handle kind safety", () => {
     ).rejects.toBeInstanceOf(PlazaKindMismatchError);
   });
 
-  it("throws PlazaUnknownTaskError when runTask is called with an unregistered name", async () => {
+  it("throws PlazaUnknownEventError when runTask is called with an unregistered name", async () => {
     const plaza = new Plaza<{}, {}>();
     await expect(
       plaza.runTask(fakeDOState(), {}, "ghost" as never, {} as never),
-    ).rejects.toBeInstanceOf(PlazaUnknownTaskError);
+    ).rejects.toBeInstanceOf(PlazaUnknownEventError);
   });
 
-  it("still silently drops a truly unknown client event (no task with that name)", async () => {
+  it("fires onError with PlazaUnknownEventError when client sends an unknown event", async () => {
     const errors: unknown[] = [];
     const plaza = new Plaza<{}, {}>().onError((err) => {
       errors.push(err);
     });
     const { ws } = await connect(plaza, {});
     await sendFrame(plaza, ws, "no-such-event", {}, {});
-    expect(errors).toEqual([]);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toBeInstanceOf(PlazaUnknownEventError);
   });
 });
 
@@ -407,7 +408,7 @@ describe("Plaza.route", () => {
     const parent = new Plaza<{}, {}>().route("v1.", sub);
     await expect(
       parent.runTask(fakeDOState(), {}, "ping" as never, {} as never),
-    ).rejects.toBeInstanceOf(PlazaUnknownTaskError);
+    ).rejects.toBeInstanceOf(PlazaUnknownEventError);
     await parent.runTask(fakeDOState(), {}, "v1.ping", {});
     expect(seen).toEqual(["hit"]);
   });
